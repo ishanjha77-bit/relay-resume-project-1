@@ -14,8 +14,6 @@ import path from "node:path"
 import { expect, test, type Page } from "@playwright/test"
 
 import type { AgentStep, Approval, Hypothesis, IncidentDetail } from "../lib/types"
-import evalBatches from "./fixtures/eval-batches.json"
-import evalRuns from "./fixtures/eval-runs.json"
 import { API, FakeBroker } from "./support"
 
 test.skip(!process.env.DEMO, "records the README demo; set DEMO=1")
@@ -28,6 +26,13 @@ const final = JSON.parse(
 ) as IncidentDetail
 const steps = JSON.parse(readFileSync(fixture(live ? "live-steps.json" : "demo-steps.json"), "utf-8")) as AgentStep[]
 const id = final.incident.id
+// The evals page ends the demo on the real batches, as `make demo-site` exported them.
+const evals = (name: string) => {
+  const exported = path.join(__dirname, "..", "public", "demo", "evals", `${name}.json`)
+  return JSON.parse(readFileSync(existsSync(exported) ? exported : fixture(`eval-${name}.json`), "utf-8")) as unknown
+}
+const evalBatches = evals("batches")
+const evalRuns = evals("runs")
 // INC-24 was captured before Gitea linked to its browsable address (`make gitea-ui`).
 const executed = JSON.parse(
   JSON.stringify(final.approvals[0] ?? null).replaceAll("http://gitea:3000", "http://localhost:3003"),
@@ -108,7 +113,8 @@ async function mockDemoApi(page: Page, state: { detail: IncidentDetail; steps: A
     }
     if (p === "/api/incidents") return json({ items: [state.detail.incident], next_cursor: null })
     if (p.endsWith("/steps")) return json(state.steps)
-    if (p.includes("/approvals/")) return json(stage(steps.length, true).approvals[0])
+    // Deciding returns the approval as APPROVED; the pull request comes later, as a step.
+    if (p.includes("/approvals/")) return json({ ...executed, status: "APPROVED", result: null })
     if (p.startsWith("/api/incidents/")) return json(state.detail)
     if (p === "/api/evals/batches") return json(evalBatches)
     if (p === "/api/evals/runs") return json(evalRuns)

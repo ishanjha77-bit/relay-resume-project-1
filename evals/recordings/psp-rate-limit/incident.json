@@ -1,0 +1,25 @@
+{
+  "id": "d03557d9-3e92-4f80-b82d-c4527fa64338",
+  "number": 40,
+  "title": "HighErrorRate on orders (+1 more)",
+  "opened_at": "2026-10-07T05:00:43.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T05:00:43.201Z",
+      "summary": "orders: 25.61% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T05:00:43.201Z",
+      "summary": "payments: 34.9% of requests are failing"
+    }
+  ]
+}

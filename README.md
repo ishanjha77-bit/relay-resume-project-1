@@ -10,9 +10,9 @@ approves it.
 Everything runs on a laptop: a kind cluster, a four-service shop to break,
 and Gemini's free tier. **Running it costs $0.**
 
-![A real recorded incident replayed in the console: the trace streams in, an evidence chip opens the exact quote, the fixer asks, alice approves, a draft pull request opens](docs/demo.gif)
+![A real recorded incident replayed in the console: triage, the trace streams in, an evidence chip opens the exact quote, the fixer asks, alice approves, a draft pull request opens, the postmortem, the evals page](docs/demo.gif)
 
-*A real incident (INC-24, a bad deploy of orders), replayed in the console from the platform's own records.*
+*A real incident (INC-63, a bad deploy of orders), replayed in the console from the platform's own records: triage, the investigation, the approved revert as a draft pull request, the postmortem, then the evals page.*
 
 ## Results
 
@@ -203,7 +203,7 @@ Sign in to the console as `alice` (approver), `bob` (responder) or `vic`
 | `make eval` | every scenario end to end, scored; resumable batches in `evals/reports/<batch>/` |
 | `make eval-retrieval` | runbook search quality on labelled queries (no LLM, no quota) |
 | `make investigate` / `make replay run=…` | drive the agent from a terminal; replay a recorded run offline |
-| `make test` / `make test-e2e` | unit and integration tests (Python, TypeScript, Go, Java) / console end-to-end tests |
+| `make test` / `make test-e2e` | unit and integration tests (Python, TypeScript, Go, Java), including 10 golden traces: recorded investigations replayed offline that must still reach their root cause / console end-to-end tests |
 
 | URL | What |
 |-----|------|
@@ -275,7 +275,7 @@ scripts/         secrets, the deploy repo, local MCP servers, smoke test
 | Weeks | Milestone | Status |
 |-------|-----------|--------|
 | 1–2 | Sandbox services, chaos scenarios, Prometheus / Loki / Jaeger / Grafana on kind | ✅ |
-| 3 | Thinnest agent loop: one LangGraph agent + logs and metrics MCP servers | ✅ golden trace in `evals/recordings/db-pool` |
+| 3 | Thinnest agent loop: one LangGraph agent + logs and metrics MCP servers | ✅ 10 golden traces in `evals/recordings/`, replayed in CI |
 | 4 | Platform API: incidents, alert webhook, WebSocket streaming; agent service on Redis Streams | ✅ |
 | 5 | Console: inbox, live trace, hypotheses with evidence, evals dashboard | ✅ Playwright e2e + axe |
 | 6 | Multi-agent + safety: triage, reviewer, fixer; approval gates; GitHub MCP (Gitea locally); k8s MCP | ✅ |

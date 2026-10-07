@@ -77,8 +77,10 @@ function PendingApproval({
   const reasonId = useId()
   const decide = useMutation({
     mutationFn: (decision: "approve" | "reject") => api.decide(incidentId, approval.id, decision, reason.trim()),
-    onSuccess: (decided) => {
-      toast.success(decided.status === "APPROVED" ? "Approved: the agent will open the pull request" : "Rejected")
+    // The toast follows what was decided: by the time the response lands, an approved
+    // action may already be EXECUTED or FAILED.
+    onSuccess: (_decided, decision) => {
+      toast.success(decision === "approve" ? "Approved: the agent will open the pull request" : "Rejected")
       setDialog(null)
       void queryClient.invalidateQueries({ queryKey: ["incident", incidentId] })
       void queryClient.invalidateQueries({ queryKey: ["incidents"] })

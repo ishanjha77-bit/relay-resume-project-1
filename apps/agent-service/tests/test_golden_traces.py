@@ -1,7 +1,8 @@
 """Golden traces: replay recorded live investigations offline and check the verdict.
 
-Each directory in evals/recordings/ is a real run (`make investigate record=...`):
-the incident, every Claude response and every tool result. Replaying it drives
+Each directory in evals/recordings/ is a real run (`make investigate record=...`, or
+a correct run copied from an eval batch's recordings/, named after its scenario):
+the incident, every model response and every tool result. Replaying it drives
 the real graph — parsing, routing, budgets, evidence and citation checks — with
 no network and no API cost, so any change to the agent's plumbing that breaks a
 known-good diagnosis fails CI.
