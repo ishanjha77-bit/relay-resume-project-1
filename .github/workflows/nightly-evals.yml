@@ -1,6 +1,8 @@
 # The nightly scorecard: the whole system on a kind cluster in the runner (sandbox,
 # observability, Relay), every chaos scenario end to end, the scorecard kept as an
 # artifact. Needs a free Gemini API key in the GEMINI_API_KEY repository secret.
+# The schedule is opt-in (repository variable NIGHTLY_EVALS=true): a batch spends
+# most of a day's free-tier quota, which the same key may need for other work.
 name: nightly evals
 
 on:
@@ -18,6 +20,7 @@ permissions:
 
 jobs:
   evals:
+    if: github.event_name == 'workflow_dispatch' || vars.NIGHTLY_EVALS == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
