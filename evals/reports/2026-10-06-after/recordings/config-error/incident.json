@@ -1,0 +1,33 @@
+{
+  "id": "61774410-58e5-45f7-99ec-9ce8b9ec9446",
+  "number": 27,
+  "title": "PodCrashLooping on inventory",
+  "opened_at": "2026-10-05T20:06:03.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "PodCrashLooping",
+      "service": "inventory",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-05T20:06:03.201Z",
+      "summary": "inventory: container restarted 2.138 times in 10 minutes"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "inventory",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-05T19:59:33.201Z",
+      "summary": "inventory: 6.029% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-05T20:06:03.201Z",
+      "summary": "orders: 6.97% of requests are failing"
+    }
+  ]
+}

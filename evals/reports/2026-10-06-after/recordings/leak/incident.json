@@ -1,0 +1,17 @@
+{
+  "id": "955ddcdb-aa0f-48da-98ac-95cc3d096692",
+  "number": 33,
+  "title": "HighErrorRate on gateway",
+  "opened_at": "2026-10-06T20:07:03.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-06T20:07:03.201Z",
+      "summary": "gateway: 17.53% of requests are failing"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "queries": 53,
+  "chunks": 86,
+  "index_s": 18.880629900144413,
+  "embed_query_p50_ms": 24.298700038343668,
+  "retrievers": {
+    "Keywords (Postgres full text)": {
+      "recall_at_1": 0.7358490566037735,
+      "recall_at_3": 0.9433962264150944,
+      "mrr_at_10": 0.8411949685534592
+    },
+    "Vectors (bge-small)": {
+      "recall_at_1": 0.7924528301886793,
+      "recall_at_3": 0.9056603773584906,
+      "mrr_at_10": 0.8595911949685534
+    },
+    "Vectors, with BGE's query instruction": {
+      "recall_at_1": 0.8301886792452831,
+      "recall_at_3": 0.9056603773584906,
+      "mrr_at_10": 0.8847708894878706
+    },
+    "Hybrid (RRF of both)": {
+      "recall_at_1": 0.8113207547169812,
+      "recall_at_3": 0.9433962264150944,
+      "mrr_at_10": 0.885062893081761
+    },
+    "Hybrid, with BGE's query instruction": {
+      "recall_at_1": 0.8490566037735849,
+      "recall_at_3": 0.9622641509433962,
+      "mrr_at_10": 0.9018867924528301
+    }
+  }
+}

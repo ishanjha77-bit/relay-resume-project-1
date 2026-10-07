@@ -1,0 +1,30 @@
+{
+  "event_id": "b8e1d0c2-5f3a-4d6b-8a9e-1c2d3e4f5a60",
+  "type": "incident.opened",
+  "at": "2026-10-04T09:00:12.418Z",
+  "incident": {
+    "id": "4f1c2a9e-7b3d-4e8a-9c1f-2d6b8e0a5c31",
+    "number": 42,
+    "title": "HighErrorRate on orders (+1 more)",
+    "opened_at": "2026-10-04T08:59:40Z",
+    "namespace": "sandbox",
+    "alerts": [
+      {
+        "name": "HighErrorRate",
+        "service": "orders",
+        "severity": "critical",
+        "state": "firing",
+        "since": "2026-10-04T08:59:40Z",
+        "summary": "orders: 64% of requests are failing"
+      },
+      {
+        "name": "HighErrorRate",
+        "service": "gateway",
+        "severity": "critical",
+        "state": "firing",
+        "since": "2026-10-04T09:00:10Z",
+        "summary": "gateway: 41% of requests are failing"
+      }
+    ]
+  }
+}

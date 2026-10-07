@@ -1,0 +1,12 @@
+id: gateway-timeout
+title: A config change cuts the gateway's upstream timeout to 80 ms
+chaos: gateway-timeout              # sandbox/chaos/gateway-timeout.sh
+expected:
+  category: [config_error]   # top hypothesis category must be one of these
+  service: [gateway]    # ...and its service one of these
+  fix: "Revert UPSTREAM_TIMEOUT_MS to 4000."
+  fix_keywords: ["timeout", "revert", "4000"]
+  change: "gateway: tighten upstream timeouts to protect the edge (#87)"   # the commit the fixer should propose reverting
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

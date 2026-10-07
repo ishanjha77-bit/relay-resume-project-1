@@ -1,0 +1,57 @@
+{
+  "id": "03d7e153-5332-4d67-94ec-de15d5e2a075",
+  "number": 18,
+  "title": "HighErrorRate on orders (+1 more)",
+  "opened_at": "2026-10-05T11:50:53.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "inventory",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-05T11:36:03.201Z",
+      "summary": "inventory: 11.66% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-05T11:50:53.201Z",
+      "summary": "orders: 24.55% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-05T11:50:53.201Z",
+      "summary": "payments: 34.62% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "inventory",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-05T11:37:03.201Z",
+      "summary": "inventory: p95 latency is 1.896s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-05T11:47:13.201Z",
+      "summary": "orders: p95 latency is 1.863s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "payments",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-05T11:47:13.201Z",
+      "summary": "payments: p95 latency is 1.588s"
+    }
+  ]
+}

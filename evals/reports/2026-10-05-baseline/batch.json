@@ -1,0 +1,4 @@
+{
+  "batch": "2026-10-05-baseline",
+  "label": "Baseline: one investigator agent (ReAct, 15-tool budget) on the Gemini free-tier chain; no triage, reviewer or RAG"
+}

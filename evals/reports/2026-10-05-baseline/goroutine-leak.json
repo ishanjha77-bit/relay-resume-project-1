@@ -1,0 +1,93 @@
+{
+  "scenario": "goroutine-leak",
+  "category": "memory_leak",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "memory_leak",
+  "top_service": "payments",
+  "confidence": 0.95,
+  "fix_score": 0.5,
+  "citations_verified": 0.667,
+  "injection_ok": true,
+  "steps": 9,
+  "llm_calls": 5,
+  "prompt_tokens": 67546,
+  "output_tokens": 2827,
+  "cache_read_tokens": 30147,
+  "cost_usd": 0.0,
+  "seconds": 173.8,
+  "agent_seconds": 42.6,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "a61978a6-df21-46e7-834b-246aa0a1e802",
+  "run_id": "run-30ba66acf799",
+  "details": {
+    "expected": {
+      "category": [
+        "memory_leak"
+      ],
+      "service": [
+        "payments"
+      ],
+      "fix": "Find the leaking goroutines (pprof goroutine profile); restart payments.",
+      "fix_keywords": [
+        "goroutine",
+        "leak"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "memory_leak",
+        "service": "payments",
+        "component": "payments container memory",
+        "confidence": 0.95,
+        "verdict": "1 of 1 citations unverified"
+      },
+      {
+        "rank": 1,
+        "category": "slow_query",
+        "service": "inventory",
+        "component": "inventory-db stock_movements query",
+        "confidence": 0.9,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The incident involves two primary issues: the payments service is crash-looping due to OOMKilled memory exhaustion, and the inventory service is experiencing slow SQL queries that exhaust its database connection pool, cascading errors and latency up to orders, gateway, and payment flows.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T10:56:59.327776Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-11 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T10:56:59.327776Z",
+        "kind": "alert.firing",
+        "message": "PodCrashLooping on payments firing: payments: container restarted 2.019 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-05T10:56:59.327776Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on gateway resolved: gateway: 7.282% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T10:56:59.327776Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on orders resolved: orders: p95 latency is 2.017s"
+      },
+      {
+        "at": "2026-10-05T10:56:59.519Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T10:57:41.902Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: memory_leak in payments (confidence 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T10:54:48.044089+00:00"
+}

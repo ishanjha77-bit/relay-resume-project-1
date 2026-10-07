@@ -1,0 +1,25 @@
+{
+  "id": "1cc56c25-9e8f-4739-a3ae-d4936f4b9a6d",
+  "number": 51,
+  "title": "PodCrashLooping on payments",
+  "opened_at": "2026-10-07T08:07:43.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "PodCrashLooping",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T08:07:43.201Z",
+      "summary": "payments: container restarted 2.008 times in 10 minutes"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-07T08:03:13.201Z",
+      "summary": "gateway: 5.26% of requests are failing"
+    }
+  ]
+}

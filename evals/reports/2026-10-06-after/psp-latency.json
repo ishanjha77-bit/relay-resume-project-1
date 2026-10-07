@@ -1,0 +1,105 @@
+{
+  "scenario": "psp-latency",
+  "category": "dependency_latency",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "dependency_latency",
+  "top_service": "psp",
+  "confidence": 0.99,
+  "fix_score": 0.5,
+  "citations_verified": 0.667,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 6,
+  "prompt_tokens": 97506,
+  "output_tokens": 2593,
+  "cache_read_tokens": 37785,
+  "cost_usd": 0.0,
+  "seconds": 141.9,
+  "agent_seconds": 42.5,
+  "model": "gemini-3.5-flash-lite+gemini-3-flash-preview",
+  "incident_id": "429fcd6c-ec47-4270-b1a9-d3eb901a65eb",
+  "run_id": "run-b0a26b361f29",
+  "details": {
+    "expected": {
+      "category": [
+        "dependency_latency"
+      ],
+      "service": [
+        "psp",
+        "payments"
+      ],
+      "fix": "Fail over to a secondary PSP or degrade gracefully; add a circuit breaker and align timeouts.",
+      "fix_keywords": [
+        "psp",
+        "timeout"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "dependency_latency",
+        "service": "psp",
+        "component": "https://api.psp.example/v1/charges",
+        "confidence": 0.99,
+        "verdict": "1 of 3 citations unverified"
+      }
+    ],
+    "summary": "An external dependency slowdown (PSP) caused payment requests to time out and abandon, leading to cascading timeouts and 5xx errors across payments, orders, and gateway.",
+    "triage": null,
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T04:54:33.543787Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-39 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T04:54:33.543787Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 22.12% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T04:54:33.543787Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 46.17% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T04:54:33.543787Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on payments firing: payments: 48.15% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T04:54:33.953Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T04:55:16.091Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: dependency_latency in psp (confidence 0.99)"
+      },
+      {
+        "at": "2026-10-07T04:55:33.537353Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 2.24s"
+      },
+      {
+        "at": "2026-10-07T04:55:33.537353Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 2.121s"
+      },
+      {
+        "at": "2026-10-07T04:55:33.537353Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on payments firing: payments: p95 latency is 4.619s"
+      }
+    ]
+  },
+  "batch": "2026-10-06-after",
+  "run_at": "2026-10-07T04:52:50.080057+00:00"
+}

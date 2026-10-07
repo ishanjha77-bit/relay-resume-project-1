@@ -1,0 +1,25 @@
+{
+  "scenario": "cpu-burn",
+  "category": "cpu_saturation",
+  "status": "no_alert",
+  "correct": null,
+  "correct_top3": null,
+  "details": {
+    "expected": {
+      "category": [
+        "cpu_saturation"
+      ],
+      "service": [
+        "payments"
+      ],
+      "fix": "Find the hot code path (pprof); restart payments; raise the CPU limit as a stopgap.",
+      "fix_keywords": [
+        "cpu",
+        "throttl"
+      ]
+    },
+    "note": "no incident within 420 s of the fault"
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T10:36:34.892261+00:00"
+}

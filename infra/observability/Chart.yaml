@@ -1,0 +1,9 @@
+apiVersion: v2
+name: observability
+description: >-
+  Metrics, logs and traces for the sandbox and for Relay itself: Prometheus,
+  Alertmanager, Loki, Jaeger, Grafana, the OpenTelemetry Collector and
+  kube-state-metrics, sized for a laptop.
+type: application
+version: 0.1.0
+appVersion: "2026.10"

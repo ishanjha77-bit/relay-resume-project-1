@@ -1,0 +1,12 @@
+id: bad-deploy
+title: Orders 1.4.0 throws NullPointerException when no discount code is given
+chaos: bad-deploy              # sandbox/chaos/bad-deploy.sh
+expected:
+  category: [bad_deploy]   # top hypothesis category must be one of these
+  service: [orders]    # ...and its service one of these
+  fix: "Roll orders back to 1.3.0; fix the null handling in DiscountService.apply."
+  fix_keywords: ["rollback", "1.3.0", "null"]
+  change: "orders 1.4.0: support stacked discount codes (#212)"   # the commit the fixer should propose reverting
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

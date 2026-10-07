@@ -1,0 +1,45 @@
+# uv workspace for every Python component: one lockfile, one dev toolchain.
+#   uv sync --all-packages        install everything
+#   uv run pytest                 run all Python tests
+[tool.uv.workspace]
+members = [
+    "apps/agent-service",
+    "mcp-servers/mcp-kit",
+    "mcp-servers/logs-loki",
+    "mcp-servers/metrics-prometheus",
+    "mcp-servers/runbooks",
+    "mcp-servers/github",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1",
+    "anyio>=4.10",
+    "ruff>=0.16",
+    "pyyaml>=6.0",
+    "jsonschema>=4.25",
+    "fakeredis>=2.32",
+    "httpx>=0.28",
+    "rfc3339-validator>=0.1.4",
+    "testcontainers[postgres]>=4.10",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+# Copy instead of hardlinking from uv's cache: hardlinks into a cloud-synced
+# folder (OneDrive) fail on Windows with "incompatible hardlinks".
+link-mode = "copy"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "ASYNC"]
+# Line length is enforced by `ruff format`; long query literals stay unsplit.
+ignore = ["E501", "RUF001", "RUF002", "RUF003"]
+
+[tool.pytest.ini_options]
+testpaths = ["apps/agent-service/tests", "mcp-servers", "evals/tests"]
+addopts = "-q --import-mode=importlib"
+pythonpath = ["apps/agent-service/tests", "evals", "mcp-servers/runbooks/tests", "mcp-servers/github/tests"]

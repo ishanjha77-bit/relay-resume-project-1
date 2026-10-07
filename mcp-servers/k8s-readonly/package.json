@@ -1,0 +1,21 @@
+{
+  "name": "relay-mcp-k8s-readonly",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server: read-only Kubernetes state (rollouts, pods, events, config) for Relay's agents.",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/main.ts",
+    "test": "node --test --experimental-strip-types test/*.test.ts",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@kubernetes/client-node": "^2.0.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2"
+  }
+}

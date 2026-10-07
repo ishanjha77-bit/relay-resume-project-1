@@ -1,0 +1,114 @@
+{
+  "scenario": "slow-query",
+  "category": "slow_query",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "slow_query",
+  "top_service": "postgres",
+  "confidence": 0.95,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 12,
+  "prompt_tokens": 245840,
+  "output_tokens": 3399,
+  "cache_read_tokens": 154800,
+  "cost_usd": 0.0,
+  "seconds": 152.6,
+  "agent_seconds": 57.0,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "48795aca-846b-4b33-b871-afeab90342aa",
+  "run_id": "run-87591ecf9bac",
+  "details": {
+    "expected": {
+      "category": [
+        "slow_query"
+      ],
+      "service": [
+        "orders",
+        "postgres"
+      ],
+      "fix": "Recreate orders_customer_created_idx (CREATE INDEX CONCURRENTLY).",
+      "fix_keywords": [
+        "index"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "slow_query",
+        "service": "postgres",
+        "component": "orders-db orders queries",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Database query performance degradation on the orders table led to connection pool exhaustion in orders and inventory services, resulting in upstream timeouts and high error rates across the gateway.",
+    "triage": null,
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T05:06:43.501630Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-41 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T05:06:43.501630Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 23.17% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T05:06:43.501630Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 22.8% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T05:06:43.882Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T05:07:40.474Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: slow_query in postgres (confidence 0.95)"
+      },
+      {
+        "at": "2026-10-07T05:07:43.493578Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on inventory firing: inventory: 11.05% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T05:07:43.493578Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on payments resolved: payments: 8.39% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T05:07:43.493578Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 4.138s"
+      },
+      {
+        "at": "2026-10-07T05:07:43.493578Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 8.59s"
+      },
+      {
+        "at": "2026-10-07T05:07:43.493578Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on payments resolved: payments: p95 latency is 2.41s"
+      },
+      {
+        "at": "2026-10-07T05:08:43.490592Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on inventory firing: inventory: p95 latency is 2.093s"
+      }
+    ]
+  },
+  "batch": "2026-10-06-after",
+  "run_at": "2026-10-07T05:05:07.878476+00:00"
+}

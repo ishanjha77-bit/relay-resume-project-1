@@ -1,0 +1,101 @@
+{
+  "scenario": "cache-down",
+  "category": "cache_failure",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "cache_failure",
+  "top_service": "redis",
+  "confidence": 0.95,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 8,
+  "prompt_tokens": 155926,
+  "output_tokens": 3033,
+  "cache_read_tokens": 82844,
+  "cost_usd": 0.0,
+  "seconds": 184.8,
+  "agent_seconds": 68.3,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "d0cecb8f-5250-4b1c-a5af-3a775d42201c",
+  "run_id": "run-61dc412d07b5",
+  "details": {
+    "expected": {
+      "category": [
+        "cache_failure",
+        "dependency_down"
+      ],
+      "service": [
+        "redis",
+        "inventory"
+      ],
+      "fix": "Restore Redis (scale it back up); protect the database with request coalescing.",
+      "fix_keywords": [
+        "redis"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "cache_failure",
+        "service": "redis",
+        "component": "inventory cache / redis",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Redis cache became unavailable due to shutdown, causing inventory queries to fall back to PostgreSQL. The resulting slow queries exhausted inventory's database connection pool, leading to widespread timeouts and error rate spikes in inventory, orders, and gateway.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T10:20:19.508796Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-7 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T10:20:19.508796Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 44.13% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T10:20:19.508796Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on inventory firing: inventory: 23.25% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T10:20:19.508796Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 45.8% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T10:20:19.769Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T10:21:19.501455Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 4.335s"
+      },
+      {
+        "at": "2026-10-05T10:21:19.501455Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on inventory firing: inventory: p95 latency is 6.402s"
+      },
+      {
+        "at": "2026-10-05T10:21:19.501455Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 1.067s"
+      },
+      {
+        "at": "2026-10-05T10:21:27.813Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: cache_failure in redis (confidence 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T10:18:22.993289+00:00"
+}

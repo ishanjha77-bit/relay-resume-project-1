@@ -1,0 +1,11 @@
+id: postgres-down
+title: The sandbox database disappears
+chaos: postgres-down              # sandbox/chaos/postgres-down.sh
+expected:
+  category: [dependency_down]   # top hypothesis category must be one of these
+  service: [postgres]    # ...and its service one of these
+  fix: "Bring Postgres back (scale the StatefulSet to 1) and check data integrity."
+  fix_keywords: ["postgres"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

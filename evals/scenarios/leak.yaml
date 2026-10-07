@@ -1,0 +1,11 @@
+id: leak
+title: Orders retains memory per request until the JVM dies with OutOfMemoryError
+chaos: leak              # sandbox/chaos/leak.sh
+expected:
+  category: [memory_leak]   # top hypothesis category must be one of these
+  service: [orders]    # ...and its service one of these
+  fix: "Find the unbounded retention (heap dump); restart buys time; fix the leak."
+  fix_keywords: ["heap", "memory", "leak"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

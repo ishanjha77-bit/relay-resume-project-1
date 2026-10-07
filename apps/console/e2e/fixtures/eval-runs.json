@@ -1,0 +1,298 @@
+[
+  {
+    "id": "a2cc7d5b-2c2c-4ed6-9bb9-e5ef8dccc94e",
+    "batch": "2026-10-05-baseline",
+    "scenario": "config-error",
+    "category": "config_error",
+    "status": "scored",
+    "correct": true,
+    "correct_top3": true,
+    "top_category": "config_error",
+    "top_service": "inventory",
+    "confidence": 0.9,
+    "fix_score": 0.0,
+    "citations_verified": 0.5,
+    "injection_ok": true,
+    "steps": 15,
+    "llm_calls": 13,
+    "prompt_tokens": 268988,
+    "output_tokens": 2207,
+    "cache_read_tokens": 176856,
+    "cost_usd": 0.0,
+    "seconds": 287.5,
+    "agent_seconds": 96.4,
+    "model": "gemini-3.5-flash-lite",
+    "incident_id": "9ad1d63d-22fc-4a75-ae07-fae9ca2bbe0c",
+    "run_id": "run-5217243a74cb",
+    "run_at": "2026-10-05T10:24:18.406415Z",
+    "details": {
+      "error": null,
+      "summary": "Inventory service version 1.5.1 is experiencing PodCrashLooping due to database connection failures on startup.",
+      "expected": {
+        "fix": "Revert DB_URL to postgres:5432 (roll back the config change).",
+        "service": [
+          "inventory"
+        ],
+        "category": [
+          "config_error"
+        ],
+        "fix_keywords": [
+          "db_url",
+          "revert",
+          "rollback"
+        ]
+      },
+      "timeline": [
+        {
+          "at": "2026-10-05T10:27:29.463219Z",
+          "kind": "incident.opened",
+          "message": "Incident INC-8 opened from alertmanager"
+        },
+        {
+          "at": "2026-10-05T10:27:29.463219Z",
+          "kind": "alert.firing",
+          "message": "PodCrashLooping on inventory firing: inventory: container restarted 2.093 times in 10 minutes"
+        },
+        {
+          "at": "2026-10-05T10:27:29.463219Z",
+          "kind": "alert.resolved",
+          "message": "HighErrorRate on gateway resolved: gateway: 8.168% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:27:29.463219Z",
+          "kind": "alert.resolved",
+          "message": "HighErrorRate on inventory resolved: inventory: 7.386% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:27:29.754Z",
+          "kind": "agent.started",
+          "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+        },
+        {
+          "at": "2026-10-05T10:28:29.454745Z",
+          "kind": "alert.firing",
+          "message": "DeploymentReplicasUnavailable on inventory firing: inventory: 1 replica(s) unavailable for 3 minutes"
+        },
+        {
+          "at": "2026-10-05T10:28:29.454745Z",
+          "kind": "alert.resolved",
+          "message": "HighErrorRate on orders resolved: orders: 7.078% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:28:29.454745Z",
+          "kind": "alert.resolved",
+          "message": "HighLatency on gateway resolved: gateway: p95 latency is 2.02s"
+        },
+        {
+          "at": "2026-10-05T10:28:29.454745Z",
+          "kind": "alert.resolved",
+          "message": "HighLatency on inventory resolved: inventory: p95 latency is 1.97s"
+        },
+        {
+          "at": "2026-10-05T10:28:29.454745Z",
+          "kind": "alert.resolved",
+          "message": "HighLatency on orders resolved: orders: p95 latency is 1.012s"
+        },
+        {
+          "at": "2026-10-05T10:29:05.883Z",
+          "kind": "agent.diagnosed",
+          "message": "Root cause: config_error in inventory (confidence 0.90)"
+        }
+      ],
+      "hypotheses": [
+        {
+          "rank": 0,
+          "service": "inventory",
+          "verdict": "1 of 2 citations unverified",
+          "category": "config_error",
+          "component": "inventory datasource configuration",
+          "confidence": 0.9
+        }
+      ]
+    }
+  },
+  {
+    "id": "9687ec99-486c-4450-bc0b-9d3061acff04",
+    "batch": "2026-10-05-baseline",
+    "scenario": "cache-down",
+    "category": "cache_failure",
+    "status": "scored",
+    "correct": true,
+    "correct_top3": true,
+    "top_category": "cache_failure",
+    "top_service": "redis",
+    "confidence": 0.95,
+    "fix_score": 1.0,
+    "citations_verified": 1.0,
+    "injection_ok": true,
+    "steps": 15,
+    "llm_calls": 8,
+    "prompt_tokens": 155926,
+    "output_tokens": 3033,
+    "cache_read_tokens": 82844,
+    "cost_usd": 0.0,
+    "seconds": 184.8,
+    "agent_seconds": 68.3,
+    "model": "gemini-3.5-flash-lite",
+    "incident_id": "d0cecb8f-5250-4b1c-a5af-3a775d42201c",
+    "run_id": "run-61dc412d07b5",
+    "run_at": "2026-10-05T10:18:22.993289Z",
+    "details": {
+      "error": null,
+      "summary": "Redis cache became unavailable due to shutdown, causing inventory queries to fall back to PostgreSQL. The resulting slow queries exhausted inventory's database connection pool, leading to widespread timeouts and error rate spikes in inventory, orders, and gateway.",
+      "expected": {
+        "fix": "Restore Redis (scale it back up); protect the database with request coalescing.",
+        "service": [
+          "redis",
+          "inventory"
+        ],
+        "category": [
+          "cache_failure",
+          "dependency_down"
+        ],
+        "fix_keywords": [
+          "redis"
+        ]
+      },
+      "timeline": [
+        {
+          "at": "2026-10-05T10:20:19.508796Z",
+          "kind": "incident.opened",
+          "message": "Incident INC-7 opened from alertmanager"
+        },
+        {
+          "at": "2026-10-05T10:20:19.508796Z",
+          "kind": "alert.firing",
+          "message": "HighErrorRate on gateway firing: gateway: 44.13% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:20:19.508796Z",
+          "kind": "alert.firing",
+          "message": "HighErrorRate on inventory firing: inventory: 23.25% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:20:19.508796Z",
+          "kind": "alert.firing",
+          "message": "HighErrorRate on orders firing: orders: 45.8% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:20:19.769Z",
+          "kind": "agent.started",
+          "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+        },
+        {
+          "at": "2026-10-05T10:21:19.501455Z",
+          "kind": "alert.firing",
+          "message": "HighLatency on gateway firing: gateway: p95 latency is 4.335s"
+        },
+        {
+          "at": "2026-10-05T10:21:19.501455Z",
+          "kind": "alert.firing",
+          "message": "HighLatency on inventory firing: inventory: p95 latency is 6.402s"
+        },
+        {
+          "at": "2026-10-05T10:21:19.501455Z",
+          "kind": "alert.firing",
+          "message": "HighLatency on orders firing: orders: p95 latency is 1.067s"
+        },
+        {
+          "at": "2026-10-05T10:21:27.813Z",
+          "kind": "agent.diagnosed",
+          "message": "Root cause: cache_failure in redis (confidence 0.95)"
+        }
+      ],
+      "hypotheses": [
+        {
+          "rank": 0,
+          "service": "redis",
+          "verdict": "verified",
+          "category": "cache_failure",
+          "component": "inventory cache / redis",
+          "confidence": 0.95
+        }
+      ]
+    }
+  },
+  {
+    "id": "65da918f-4086-424e-929e-47481a561696",
+    "batch": "2026-10-05-baseline",
+    "scenario": "bad-deploy",
+    "category": "bad_deploy",
+    "status": "scored",
+    "correct": true,
+    "correct_top3": true,
+    "top_category": "bad_deploy",
+    "top_service": "orders",
+    "confidence": 0.98,
+    "fix_score": 0.667,
+    "citations_verified": 1.0,
+    "injection_ok": true,
+    "steps": 13,
+    "llm_calls": 11,
+    "prompt_tokens": 169273,
+    "output_tokens": 5313,
+    "cache_read_tokens": 111092,
+    "cost_usd": 0.0,
+    "seconds": 358.7,
+    "agent_seconds": 165.7,
+    "model": "gemini-3.5-flash",
+    "incident_id": "89b698f0-3e23-4e8d-978a-e0234fdd5fe1",
+    "run_id": "run-c6ae54c6f99b",
+    "run_at": "2026-10-05T10:08:54.465323Z",
+    "details": {
+      "error": null,
+      "summary": "The high error rate on the gateway and orders services is caused by a faulty release (v1.4.0) of the orders service. The new version introduces a NullPointerException in the DiscountService when handling orders that do not contain a discount coupon code.",
+      "expected": {
+        "fix": "Roll orders back to 1.3.0; fix the null handling in DiscountService.apply.",
+        "service": [
+          "orders"
+        ],
+        "category": [
+          "bad_deploy"
+        ],
+        "fix_keywords": [
+          "rollback",
+          "1.3.0",
+          "null"
+        ]
+      },
+      "timeline": [
+        {
+          "at": "2026-10-05T10:12:09.908751Z",
+          "kind": "incident.opened",
+          "message": "Incident INC-6 opened from alertmanager"
+        },
+        {
+          "at": "2026-10-05T10:12:09.908751Z",
+          "kind": "alert.firing",
+          "message": "HighErrorRate on gateway firing: gateway: 16.09% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:12:09.908751Z",
+          "kind": "alert.firing",
+          "message": "HighErrorRate on orders firing: orders: 29.81% of requests are failing"
+        },
+        {
+          "at": "2026-10-05T10:12:12.545Z",
+          "kind": "agent.started",
+          "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+        },
+        {
+          "at": "2026-10-05T10:14:55.565Z",
+          "kind": "agent.diagnosed",
+          "message": "Root cause: bad_deploy in orders (confidence 0.98)"
+        }
+      ],
+      "hypotheses": [
+        {
+          "rank": 0,
+          "service": "orders",
+          "verdict": "verified",
+          "category": "bad_deploy",
+          "component": "dev.relay.sandbox.orders.pricing.DiscountService.apply",
+          "confidence": 0.98
+        }
+      ]
+    }
+  }
+]

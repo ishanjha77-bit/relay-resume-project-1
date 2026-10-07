@@ -1,0 +1,125 @@
+{
+  "scenario": "cache-down",
+  "category": "cache_failure",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "cache_failure",
+  "top_service": "redis",
+  "confidence": 0.95,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 8,
+  "prompt_tokens": 130309,
+  "output_tokens": 2851,
+  "cache_read_tokens": 26413,
+  "cost_usd": 0.0,
+  "seconds": 362.5,
+  "agent_seconds": 258.2,
+  "model": "gemini-3.6-flash+gemini-3.7-flash+gemini-3.5-flash-lite",
+  "incident_id": "7a8dd839-e2fe-4668-8f92-73b8daa64f40",
+  "run_id": "run-9075103c20cc",
+  "details": {
+    "expected": {
+      "category": [
+        "cache_failure",
+        "dependency_down"
+      ],
+      "service": [
+        "redis",
+        "inventory"
+      ],
+      "fix": "Restore Redis (scale it back up); protect the database with request coalescing.",
+      "fix_keywords": [
+        "redis"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "cache_failure",
+        "service": "redis",
+        "component": "redis",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Redis cache deployment is scaled to 0 replicas, causing all product and catalog cache lookups in inventory to time out and fall back directly to PostgreSQL. This database load spike exhausted inventory's HikariCP connection pool and saturated Postgres CPU, leading to cascading request timeouts in inventory, orders, and the gateway.",
+    "triage": {
+      "severity": "critical",
+      "service": "gateway",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-error-rate",
+        "runbook:gateway-upstream",
+        "runbook:triage-high-latency"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T07:17:02.910574Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-46 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T07:17:02.910574Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 53.82% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:17:02.910574Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on inventory firing: inventory: 44.47% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:17:02.910574Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 44.16% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:17:07.657Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with gateway. Gateway, inventory, and orders services are experiencing high error rates affecting users."
+      },
+      {
+        "at": "2026-10-07T07:17:07.661Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T07:18:02.908711Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 3.819s"
+      },
+      {
+        "at": "2026-10-07T07:18:02.908711Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on inventory firing: inventory: p95 latency is 8.923s"
+      },
+      {
+        "at": "2026-10-07T07:18:02.908711Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 1.067s"
+      },
+      {
+        "at": "2026-10-07T07:21:21.126Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: cache_failure in redis (confidence 0.95)"
+      },
+      {
+        "at": "2026-10-07T07:21:33.620Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.95 -> 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T07:15:18.596630+00:00"
+}

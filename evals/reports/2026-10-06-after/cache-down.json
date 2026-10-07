@@ -1,0 +1,112 @@
+{
+  "scenario": "cache-down",
+  "category": "cache_failure",
+  "status": "scored",
+  "correct": false,
+  "correct_top3": true,
+  "top_category": "db_pool_exhaustion",
+  "top_service": "inventory",
+  "confidence": 0.9,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 7,
+  "prompt_tokens": 104198,
+  "output_tokens": 2330,
+  "cache_read_tokens": 51088,
+  "cost_usd": 0.0,
+  "seconds": 176.6,
+  "agent_seconds": 69.5,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "f1c01578-6c10-413a-8eae-5e9690d05382",
+  "run_id": "run-f1f807315bef",
+  "details": {
+    "expected": {
+      "category": [
+        "cache_failure",
+        "dependency_down"
+      ],
+      "service": [
+        "redis",
+        "inventory"
+      ],
+      "fix": "Restore Redis (scale it back up); protect the database with request coalescing.",
+      "fix_keywords": [
+        "redis"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "db_pool_exhaustion",
+        "service": "inventory",
+        "component": "HikariCP pool inventory-db",
+        "confidence": 0.9,
+        "verdict": "verified"
+      },
+      {
+        "rank": 1,
+        "category": "cache_failure",
+        "service": "redis",
+        "component": "Redis cache",
+        "confidence": 0.8,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Inventory service experienced database connection pool exhaustion caused by Redis cache timeouts forcing continuous fallback queries to Postgres, propagating failures upstream to orders and gateway.",
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T19:59:57.504970Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-26 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T19:59:57.504970Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 51.95% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T19:59:57.504970Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on inventory firing: inventory: 46.74% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T19:59:57.504970Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 43.62% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T19:59:57.932Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T20:00:57.495999Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 3.725s"
+      },
+      {
+        "at": "2026-10-05T20:00:57.495999Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on inventory firing: inventory: p95 latency is 9.388s"
+      },
+      {
+        "at": "2026-10-05T20:00:57.495999Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 1.067s"
+      },
+      {
+        "at": "2026-10-05T20:01:07.010Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: db_pool_exhaustion in inventory (confidence 0.90)"
+      }
+    ]
+  },
+  "batch": "2026-10-06-after",
+  "run_at": "2026-10-05T19:58:10.407922+00:00"
+}

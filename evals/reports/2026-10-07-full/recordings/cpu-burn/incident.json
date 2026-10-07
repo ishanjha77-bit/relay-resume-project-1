@@ -1,0 +1,25 @@
+{
+  "id": "97ccbb62-0d30-4df7-aada-f3e1b3dc87c5",
+  "number": 48,
+  "title": "HighLatency on gateway (+1 more)",
+  "opened_at": "2026-10-07T07:39:43.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighLatency",
+      "service": "gateway",
+      "severity": "warning",
+      "state": "firing",
+      "since": "2026-10-07T07:39:43.201Z",
+      "summary": "gateway: p95 latency is 1.852s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "firing",
+      "since": "2026-10-07T07:39:43.201Z",
+      "summary": "orders: p95 latency is 1.658s"
+    }
+  ]
+}

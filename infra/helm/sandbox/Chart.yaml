@@ -1,0 +1,9 @@
+apiVersion: v2
+name: sandbox
+description: >-
+  The system under test: a small shop (gateway, orders, payments, inventory)
+  with its own Postgres, Redis and a k6 load generator. Relay investigates the
+  incidents that the chaos scripts inject into it.
+type: application
+version: 0.1.0
+appVersion: "1.0"

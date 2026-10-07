@@ -1,0 +1,46 @@
+{
+  "event_id": "2a7b9c3d-4e5f-4061-8a9b-0c1d2e3f4a5b",
+  "type": "incident.resolved",
+  "at": "2026-10-04T09:20:00Z",
+  "incident": {
+    "id": "4f1c2a9e-7b3d-4e8a-9c1f-2d6b8e0a5c31",
+    "key": "INC-42",
+    "title": "HighErrorRate on gateway (+1 more)",
+    "service": "gateway",
+    "severity": "critical",
+    "opened_at": "2026-10-04T09:00:03Z",
+    "resolved_at": "2026-10-04T09:20:00Z",
+    "resolved_by": "bob",
+    "summary": "orders 1.4.0 throws NullPointerException when an order has no discount code; checkouts fail and the gateway reports them.",
+    "run_id": "run-example",
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "bad_deploy",
+        "service": "orders",
+        "summary": "orders 1.4.0 dereferences a null discount code in DiscountService.apply.",
+        "confidence": 0.9,
+        "suggested_fix": "Roll orders back to 1.3.0; fix the null handling before redeploying.",
+        "verdict": "verified",
+        "review": {"verdict": "supported", "reason": "The NullPointerException starts with the 1.4.0 rollout and only orders fails.", "model": "gemini-3.6-flash"}
+      }
+    ],
+    "alerts": [
+      {"name": "HighErrorRate", "service": "orders", "severity": "critical", "status": "resolved", "summary": "orders: 41% of requests are failing", "starts_at": "2026-10-04T09:00:03Z", "ends_at": "2026-10-04T09:12:30Z"},
+      {"name": "HighErrorRate", "service": "gateway", "severity": "critical", "status": "resolved", "summary": "gateway: 12% of requests are failing", "starts_at": "2026-10-04T09:00:33Z", "ends_at": "2026-10-04T09:12:45Z"}
+    ],
+    "timeline": [
+      {"at": "2026-10-04T08:58:20Z", "kind": "change", "message": "orders 1.4.0: support stacked discount codes (#212) rolled out"},
+      {"at": "2026-10-04T09:00:03Z", "kind": "incident.opened", "message": "HighErrorRate on orders firing: orders: 41% of requests are failing"},
+      {"at": "2026-10-04T09:00:12Z", "kind": "agent.started", "message": "Investigation started"},
+      {"at": "2026-10-04T09:01:05Z", "kind": "agent.diagnosed", "message": "Root cause: bad_deploy in orders (confidence 0.90)"},
+      {"at": "2026-10-04T09:01:07Z", "kind": "approval.requested", "message": "Relay asks to: Revert \"orders 1.4.0: support stacked discount codes (#212)\" (risk low)"},
+      {"at": "2026-10-04T09:03:02Z", "kind": "approval.approved", "message": "alice approved: Revert \"orders 1.4.0: support stacked discount codes (#212)\""},
+      {"at": "2026-10-04T09:03:10Z", "kind": "action.executed", "message": "Draft pull request #3 opened: http://localhost:3003/shop/deploy/pulls/3"},
+      {"at": "2026-10-04T09:20:00Z", "kind": "incident.resolved", "message": "Resolved by bob"}
+    ],
+    "approvals": [
+      {"title": "Revert \"orders 1.4.0: support stacked discount codes (#212)\"", "status": "EXECUTED", "decided_by": "alice", "decision_reason": "Matches the deploy timeline; roll back.", "result": {"pull_request": 3, "url": "http://localhost:3003/shop/deploy/pulls/3"}}
+    ]
+  }
+}

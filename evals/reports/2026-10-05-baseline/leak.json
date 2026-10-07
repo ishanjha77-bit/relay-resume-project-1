@@ -1,0 +1,76 @@
+{
+  "scenario": "leak",
+  "category": "memory_leak",
+  "status": "scored",
+  "correct": false,
+  "correct_top3": false,
+  "top_category": "slow_query",
+  "top_service": "postgres",
+  "confidence": 0.95,
+  "fix_score": 0.0,
+  "citations_verified": 1.0,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 14,
+  "prompt_tokens": 350218,
+  "output_tokens": 3219,
+  "cache_read_tokens": 245303,
+  "cost_usd": 0.0,
+  "seconds": 225.6,
+  "agent_seconds": 58.2,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "0078d2bf-dc5b-407b-8542-54ec083cf150",
+  "run_id": "run-dee54e9e860c",
+  "details": {
+    "expected": {
+      "category": [
+        "memory_leak"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Find the unbounded retention (heap dump); restart buys time; fix the leak.",
+      "fix_keywords": [
+        "heap",
+        "memory",
+        "leak"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "slow_query",
+        "service": "postgres",
+        "component": "inventory-db queries",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Slow database queries on inventory-db caused connection pool exhaustion in the inventory service, resulting in cascading failures across orders and gateway.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T11:08:49.240151Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-12 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T11:08:49.240151Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 17.41% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:08:49.449Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T11:09:47.404Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: slow_query in postgres (confidence 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T11:06:01.825749+00:00"
+}

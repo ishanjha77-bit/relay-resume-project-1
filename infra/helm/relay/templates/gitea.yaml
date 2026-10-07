@@ -1,0 +1,84 @@
+{{- /*
+A local git host for the sandbox's deploy repository (shop/deploy), so the
+whole fix flow (agent proposes, human approves, draft PR opens) works free and
+offline. Set deployRepo.host=github to use a real GitHub repository instead.
+Seeded by `make deploy-repo`; browse it with `make gitea-ui`.
+*/ -}}
+{{- if .Values.gitea.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-data
+  labels: {{- include "relay.labels" "gitea" | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.gitea.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea
+  labels: {{- include "relay.labels" "gitea" | nindent 4 }}
+spec:
+  selector: {{- include "relay.selector" "gitea" | nindent 4 }}
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  labels: {{- include "relay.labels" "gitea" | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # one pod owns the volume
+  selector:
+    matchLabels: {{- include "relay.selector" "gitea" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" "gitea" | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: gitea
+          image: {{ .Values.images.gitea }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 3000 }
+          env:
+            - { name: GITEA__security__INSTALL_LOCK, value: "true" }
+            - { name: GITEA__database__DB_TYPE, value: sqlite3 }
+            # Links in pull requests point at the port-forward `make gitea-ui` opens.
+            - { name: GITEA__server__ROOT_URL, value: "http://localhost:3003/" }
+            # ...and always ROOT_URL: without this Gitea builds links from the Host header of
+            # the request (the MCP server calls it as gitea:3000, which no browser can open).
+            - { name: GITEA__server__PUBLIC_URL_DETECTION, value: legacy }
+            - { name: GITEA__server__DISABLE_SSH, value: "true" }
+            - { name: GITEA__server__START_SSH_SERVER, value: "false" }
+            - { name: GITEA__server__OFFLINE_MODE, value: "true" }
+            - { name: GITEA__service__DISABLE_REGISTRATION, value: "true" }
+            - { name: GITEA__repository__DEFAULT_BRANCH, value: main }
+            - { name: GITEA__log__LEVEL, value: Warn }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/gitea, subPath: data }
+            - { name: data, mountPath: /etc/gitea, subPath: config }
+          readinessProbe:
+            httpGet: { path: /api/healthz, port: http }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /api/healthz, port: http }
+            periodSeconds: 20
+            failureThreshold: 6
+          resources: {{- toYaml .Values.gitea.resources | nindent 12 }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitea-data
+{{- end }}

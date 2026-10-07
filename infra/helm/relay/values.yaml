@@ -1,0 +1,105 @@
+# Secrets (API key, JWT signing key, tokens, DB password) live in this Secret,
+# created by `make relay-secrets`, never in values: they stay out of Helm's
+# release history.
+secretName: relay-secrets
+
+images:
+  platformApi: relay/platform-api:dev
+  agentService: relay/agent-service:dev
+  mcpLogs: relay/mcp-logs:dev
+  mcpMetrics: relay/mcp-metrics:dev
+  mcpK8s: relay/mcp-k8s:dev
+  mcpRunbooks: relay/mcp-runbooks:dev
+  mcpGithub: relay/mcp-github:dev
+  gitea: gitea/gitea:28.0.0-rootless
+  console: relay/console:dev
+  postgres: pgvector/pgvector:0.8.7-pg18
+  redis: redis:8.10.2
+
+# Host ports come from infra/kind-cluster.yaml (NodePort -> localhost).
+nodePorts:
+  console: 30000
+  platformApi: 30081
+  agentService: 30800
+  postgres: 30432
+  redis: 30379
+
+console:
+  resources:
+    requests: { cpu: 20m, memory: 96Mi }
+    limits: { cpu: 500m, memory: 256Mi }
+
+platformApi:
+  # Browser origins allowed to call the API (the console).
+  allowedOrigins: http://localhost:3000,http://localhost:3002
+  resources:
+    requests: { cpu: 100m, memory: 384Mi }
+    limits: { cpu: "1", memory: 768Mi }
+
+agentService:
+  maxConcurrentRuns: 2
+  runTimeoutS: 600
+  # Rollouts let running investigations finish (terminationGracePeriodSeconds is 30 s more).
+  shutdownGraceS: 240
+  recordingsStorage: 1Gi
+  # Gemini's free tier (docs/adr/0010); a claude-* model uses ANTHROPIC_API_KEY instead.
+  # A run moves down this list when its model is busy or out of its daily quota.
+  investigator:
+    model: gemini-3.6-flash
+    fallbacks: [gemini-3.8-flash, gemini-3.7-flash, gemini-3.5-flash, gemini-3-flash-preview,
+                gemini-3.5-flash-lite, gemini-3.1-flash-lite]
+    effort: medium
+  # The agents around the investigator (docs/adr/0013); turn one off to measure what it adds.
+  triage: { enabled: true }
+  reviewer: { enabled: true }
+  postmortems: { enabled: true }
+  budget:
+    toolCalls: 15
+    costUsd: 2.0
+  resources:
+    requests: { cpu: 50m, memory: 192Mi }
+    limits: { cpu: "1", memory: 512Mi }
+
+# Relay's own traces go to the same OpenTelemetry Collector as the sandbox's.
+telemetry:
+  otlpHttp: http://otel-collector.observability.svc.cluster.local:4318
+
+mcp:
+  lokiUrl: http://loki.observability.svc.cluster.local:3100
+  prometheusUrl: http://prometheus.observability.svc.cluster.local:9090
+  # The namespace the agents may look at: the system under test, not Relay.
+  sandboxNamespace: sandbox
+  resources:
+    requests: { cpu: 20m, memory: 96Mi }
+    limits: { cpu: 500m, memory: 256Mi }
+  # The runbooks server also runs the embedding model (ONNX Runtime).
+  runbooksResources:
+    requests: { cpu: 50m, memory: 256Mi }
+    limits: { cpu: "1", memory: 768Mi }
+
+# The sandbox's deploy repository, where Relay proposes fixes as draft pull
+# requests. gitea: the local Gitea in this chart (free, offline). github: a real
+# repository; set GITHUB_TOKEN in .env, `make relay-secrets`, and the repo here.
+deployRepo:
+  host: gitea
+  apiUrl: http://gitea:3000/api/v1
+  repo: shop/deploy
+
+gitea:
+  enabled: true
+  storage: 1Gi
+  resources:
+    requests: { cpu: 20m, memory: 128Mi }
+    limits: { cpu: 500m, memory: 384Mi }
+
+postgres:
+  storage: 2Gi
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { cpu: "1", memory: 512Mi }
+
+redis:
+  storage: 1Gi
+  resources:
+    requests: { cpu: 20m, memory: 32Mi }
+    limits: { cpu: 500m, memory: 256Mi }

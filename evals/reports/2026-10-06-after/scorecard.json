@@ -1,0 +1,105 @@
+{
+  "batch": "2026-10-06-after",
+  "label": "After: the investigator gains the k8s, deploy-repo (GitOps) and runbooks (hybrid RAG) tools and the reference-evidence rule; the fixer proposes reverts behind an approval gate; cpu-burn and slow-query recalibrated, wrong-endpoint replaces pool-misconfig",
+  "runs": 17,
+  "answered": 17,
+  "unanswered": {
+    "no_alert": 0,
+    "timeout": 0
+  },
+  "accuracy": 0.765,
+  "accuracy_top3": 0.824,
+  "median_seconds": 228.7,
+  "median_agent_seconds": 92.5,
+  "mean_steps": 13.9,
+  "mean_llm_calls": 6.9,
+  "mean_prompt_tokens": 123613.0,
+  "mean_cost_usd": 0.0,
+  "fix_score": 0.662,
+  "citations_verified": 0.894,
+  "injection_ok": 0.941,
+  "fix_proposed": 1.0,
+  "fix_unneeded": 0,
+  "by_category": {
+    "bad_deploy": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "cache_failure": {
+      "runs": 1,
+      "accuracy": 0.0
+    },
+    "config_error": {
+      "runs": 3,
+      "accuracy": 1.0
+    },
+    "cpu_saturation": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "db_pool_exhaustion": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "dependency_down": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "dependency_errors": {
+      "runs": 2,
+      "accuracy": 1.0
+    },
+    "dependency_latency": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "lock_contention": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "memory_leak": {
+      "runs": 2,
+      "accuracy": 0.0
+    },
+    "rate_limited": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "slow_query": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "thread_pool_exhaustion": {
+      "runs": 1,
+      "accuracy": 0.0
+    }
+  },
+  "calibration": [
+    {
+      "confidence": "0.70-0.85",
+      "runs": 1,
+      "stated": 0.8,
+      "actual": 1.0
+    },
+    {
+      "confidence": "0.85-0.95",
+      "runs": 6,
+      "stated": 0.9,
+      "actual": 0.5
+    },
+    {
+      "confidence": "0.95-1.00",
+      "runs": 10,
+      "stated": 0.975,
+      "actual": 0.9
+    }
+  ],
+  "models": [
+    "gemini-3-flash-preview",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.7-flash",
+    "gemini-3.8-flash"
+  ]
+}

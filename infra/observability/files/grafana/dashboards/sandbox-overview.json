@@ -1,0 +1,187 @@
+{
+  "uid": "sandbox-overview",
+  "title": "Sandbox — Service Overview",
+  "description": "RED metrics, saturation and errors for the system under test.",
+  "tags": ["relay", "sandbox"],
+  "timezone": "browser",
+  "editable": true,
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Firing alerts",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        { "refId": "A", "expr": "ALERTS{alertstate=\"firing\"}", "instant": true, "format": "table" }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "Value": true, "__name__": true, "alertstate": true, "cluster": true } } }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Requests / s",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 5 },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (rate(http_server_requests_seconds_count{namespace=\"sandbox\", uri!~\"/actuator.*\"}[1m]))", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Error ratio (5xx)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 5 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "min": 0, "max": 1,
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 0.05 } ] },
+          "custom": { "thresholdsStyle": { "mode": "line" } }
+        },
+        "overrides": []
+      },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (rate(http_server_requests_seconds_count{namespace=\"sandbox\", outcome=\"SERVER_ERROR\", uri!~\"/actuator.*\"}[1m])) / sum by (service) (rate(http_server_requests_seconds_count{namespace=\"sandbox\", uri!~\"/actuator.*\"}[1m]))", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "p95 latency",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 5 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] },
+          "custom": { "thresholdsStyle": { "mode": "line" } }
+        },
+        "overrides": []
+      },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.95, sum by (service, le) (rate(http_server_requests_seconds_bucket{namespace=\"sandbox\", uri!~\"/actuator.*\"}[1m])))", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Outbound call p95 (by caller → dependency)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 13 },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.95, sum by (service, client_name, le) (rate(http_client_requests_seconds_bucket{namespace=\"sandbox\"}[1m])))", "legendFormat": "{{service}} → {{client_name}}" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "DB connection pool (Hikari)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 13 },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (hikaricp_connections_active{namespace=\"sandbox\"})", "legendFormat": "{{service}} active" },
+        { "refId": "B", "expr": "sum by (service) (hikaricp_connections_pending{namespace=\"sandbox\"})", "legendFormat": "{{service}} waiting" },
+        { "refId": "C", "expr": "max by (service) (hikaricp_connections_max{namespace=\"sandbox\"})", "legendFormat": "{{service}} max" }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Tomcat busy threads",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 13 },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (tomcat_threads_busy_threads{namespace=\"sandbox\"})", "legendFormat": "{{service}} busy" },
+        { "refId": "B", "expr": "max by (service) (tomcat_threads_config_max_threads{namespace=\"sandbox\"})", "legendFormat": "{{service}} max" }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "JVM heap used",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 21 },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (jvm_memory_used_bytes{namespace=\"sandbox\", area=\"heap\"})", "legendFormat": "{{service}} used" },
+        { "refId": "B", "expr": "sum by (service) (jvm_memory_max_bytes{namespace=\"sandbox\", area=\"heap\"} > 0)", "legendFormat": "{{service}} max" }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Container memory (working set)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 21 },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (container_memory_working_set_bytes{namespace=\"sandbox\"})", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Container CPU (cores)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 21 },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (rate(container_cpu_usage_seconds_total{namespace=\"sandbox\"}[1m]))", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Container restarts (10m)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 29 },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (container) (increase(kube_pod_container_status_restarts_total{namespace=\"sandbox\"}[10m]))", "legendFormat": "{{container}}" }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Go goroutines",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 29 },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (service) (go_goroutines{namespace=\"sandbox\"})", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Service graph — calls / s (from traces)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 29 },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum by (client, server) (rate({__name__=~\"traces_service_graph_request_total|traces_service_graph_request\"}[1m]))", "legendFormat": "{{client}} → {{server}}" }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "logs",
+      "title": "Errors and warnings",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 37 },
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true },
+      "targets": [
+        { "refId": "A", "expr": "{k8s_namespace_name=\"sandbox\"} | json | level=~\"ERROR|WARN\"" }
+      ]
+    }
+  ]
+}

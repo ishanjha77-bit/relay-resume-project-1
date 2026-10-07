@@ -1,0 +1,104 @@
+{
+  "scenario": "postgres-down",
+  "category": "dependency_down",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "dependency_down",
+  "top_service": "postgres",
+  "confidence": 0.99,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 11,
+  "prompt_tokens": 253104,
+  "output_tokens": 2519,
+  "cache_read_tokens": 159960,
+  "cost_usd": 0.0,
+  "seconds": 165.0,
+  "agent_seconds": 59.3,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "10ef0b82-306f-48a3-a972-dc83108a8bdd",
+  "run_id": "run-5bb557344ad7",
+  "details": {
+    "expected": {
+      "category": [
+        "dependency_down"
+      ],
+      "service": [
+        "postgres"
+      ],
+      "fix": "Bring Postgres back (scale the StatefulSet to 1) and check data integrity.",
+      "fix_keywords": [
+        "postgres"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "dependency_down",
+        "service": "postgres",
+        "component": "postgres database instance",
+        "confidence": 0.99,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Postgres database shut down, causing connection failures and downstream service errors across inventory and orders.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T11:36:29.115611Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-15 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T11:36:29.115611Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 60.96% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:36:29.115611Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on inventory firing: inventory: 58.08% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:36:29.115611Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 69.79% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:36:29.213Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T11:37:28.449Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: dependency_down in postgres (confidence 0.99)"
+      },
+      {
+        "at": "2026-10-05T11:37:29.110034Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on payments resolved: payments: 8.617% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:37:29.110034Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 2.425s"
+      },
+      {
+        "at": "2026-10-05T11:37:29.110034Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on inventory firing: inventory: p95 latency is 2.13s"
+      },
+      {
+        "at": "2026-10-05T11:37:29.110034Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 2.094s"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T11:34:43.430765+00:00"
+}

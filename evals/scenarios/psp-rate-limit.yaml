@@ -1,0 +1,11 @@
+id: psp-rate-limit
+title: The PSP throttles 70% of charges with 429
+chaos: psp-rate-limit              # sandbox/chaos/psp-rate-limit.sh
+expected:
+  category: [rate_limited]   # top hypothesis category must be one of these
+  service: [psp, payments]    # ...and its service one of these
+  fix: "Reduce request rate (backoff with Retry-After, queue charges) and raise the PSP quota."
+  fix_keywords: ["429", "rate", "quota"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

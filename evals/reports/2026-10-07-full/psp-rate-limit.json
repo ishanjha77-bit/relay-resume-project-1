@@ -1,0 +1,126 @@
+{
+  "scenario": "psp-rate-limit",
+  "category": "rate_limited",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "rate_limited",
+  "top_service": "psp",
+  "confidence": 0.95,
+  "fix_score": 0.333,
+  "citations_verified": 0.667,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 8,
+  "llm_calls": 9,
+  "prompt_tokens": 138794,
+  "output_tokens": 2050,
+  "cache_read_tokens": 97228,
+  "cost_usd": 0.0,
+  "seconds": 151.6,
+  "agent_seconds": 37.9,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "34240e00-3a08-4ef5-bac1-6899b0da624e",
+  "run_id": "run-16fdb6c7f0d5",
+  "details": {
+    "expected": {
+      "category": [
+        "rate_limited"
+      ],
+      "service": [
+        "psp",
+        "payments"
+      ],
+      "fix": "Reduce request rate (backoff with Retry-After, queue charges) and raise the PSP quota.",
+      "fix_keywords": [
+        "429",
+        "rate",
+        "quota"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "rate_limited",
+        "service": "psp",
+        "component": "payments / psp charge endpoint",
+        "confidence": 0.95,
+        "verdict": "1 of 3 citations unverified"
+      }
+    ],
+    "summary": "An incident occurred due to the external payment service provider (PSP) rate-limiting requests (HTTP 429 Too Many Requests). The payments service failed to process charges, causing cascading errors in orders and gateway.",
+    "triage": {
+      "severity": "critical",
+      "service": "payments",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-latency",
+        "runbook:triage-high-error-rate",
+        "runbook:payment-provider"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-58 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 12.74% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on inventory resolved: inventory: 7.297% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 25.34% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on payments firing: payments: 33.42% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on gateway resolved: gateway: p95 latency is 1.289s"
+      },
+      {
+        "at": "2026-10-07T08:59:42.450477Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on orders resolved: orders: p95 latency is 1.015s"
+      },
+      {
+        "at": "2026-10-07T08:59:44.650Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with payments. High error rates are affecting payments, orders, and gateway, causing request failures for users."
+      },
+      {
+        "at": "2026-10-07T08:59:44.653Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T09:00:20.333Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: rate_limited in psp (confidence 0.95)"
+      },
+      {
+        "at": "2026-10-07T09:00:21.537Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.95 -> 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T08:57:48.767078+00:00"
+}

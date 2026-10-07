@@ -1,0 +1,109 @@
+{
+  "scenario": "wrong-endpoint",
+  "category": "config_error",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "config_error",
+  "top_service": "orders",
+  "confidence": 1.0,
+  "fix_score": 0.75,
+  "citations_verified": 0.667,
+  "fix_proposed": true,
+  "fix_unneeded": null,
+  "injection_ok": true,
+  "steps": 13,
+  "llm_calls": 10,
+  "prompt_tokens": 164890,
+  "output_tokens": 2348,
+  "cache_read_tokens": 100794,
+  "cost_usd": 0.0,
+  "seconds": 228.3,
+  "agent_seconds": 75.4,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "324ad9cb-0175-4ede-9124-063a1405748e",
+  "run_id": "run-f15aebc5ccd3",
+  "details": {
+    "expected": {
+      "category": [
+        "config_error"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Revert INVENTORY_URL on orders to http://inventory:8080 (roll back the config change).",
+      "fix_keywords": [
+        "inventory_url",
+        "revert",
+        "rollback",
+        "8080"
+      ],
+      "change": "orders: call inventory through its new internal port (#227)"
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "config_error",
+        "service": "orders",
+        "component": "orders INVENTORY_URL configuration",
+        "confidence": 1.0,
+        "verdict": "1 of 3 citations unverified"
+      }
+    ],
+    "summary": "A configuration update in orders changed the inventory port to 8081, causing all downstream calls from orders to inventory to time out and resulting in widespread API failures across orders and gateway.",
+    "triage": null,
+    "proposals": [
+      "Revert \"orders: call inventory through its new internal port (#227)\""
+    ],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T05:25:53.423848Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-43 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T05:25:53.423848Z",
+        "kind": "alert.resolved",
+        "message": "PodCrashLooping on orders resolved: orders: container restarted 2.034 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T05:25:53.423848Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 21.16% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T05:25:53.423848Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 46.53% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T05:25:53.590Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T05:26:53.417251Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on gateway resolved: gateway: p95 latency is 2.562s"
+      },
+      {
+        "at": "2026-10-07T05:26:53.417251Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on inventory resolved: inventory: p95 latency is 1.094s"
+      },
+      {
+        "at": "2026-10-07T05:27:08.835Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: config_error in orders (confidence 1.00)"
+      },
+      {
+        "at": "2026-10-07T05:27:09.044Z",
+        "kind": "approval.requested",
+        "message": "Relay asks to: Revert \"orders: call inventory through its new internal port (#227)\" (risk low)"
+      }
+    ]
+  },
+  "batch": "2026-10-06-after",
+  "run_at": "2026-10-07T05:23:20.482550+00:00"
+}

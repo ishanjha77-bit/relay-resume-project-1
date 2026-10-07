@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relay.dev/contracts/approval-decision.schema.json",
+  "title": "approval decision",
+  "description": "Published by platform-api on the Redis stream `relay.approvals` when a human approves or rejects an agent's action; consumed by agent-service, which resumes the paused run. `approval_id` is the idempotency key. An approval carries `token`: a short-lived RS256 JWT from the platform (audience relay-actions) whose `action_sha256` claim binds it to `action`, byte for byte; the MCP server that performs the write verifies both.",
+  "type": "object",
+  "required": [
+    "approval_id",
+    "incident_id",
+    "run_id",
+    "decision",
+    "decided_by",
+    "decided_at",
+    "action"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "approval_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "enum": [
+        "approved",
+        "rejected"
+      ]
+    },
+    "decided_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "action": {
+      "type": "string",
+      "minLength": 2
+    },
+    "token": {
+      "type": "string",
+      "minLength": 20
+    }
+  },
+  "if": {
+    "properties": {
+      "decision": {
+        "const": "approved"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "token"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "token"
+      ]
+    }
+  }
+}

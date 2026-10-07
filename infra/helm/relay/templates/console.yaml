@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: console
+  labels: {{- include "relay.labels" "console" | nindent 4 }}
+spec:
+  type: NodePort
+  selector: {{- include "relay.selector" "console" | nindent 4 }}
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      nodePort: {{ .Values.nodePorts.console }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: console
+  labels: {{- include "relay.labels" "console" | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "relay.selector" "console" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" "console" | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: console
+          image: {{ .Values.images.console }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 3000 }
+          livenessProbe:
+            httpGet: { path: /login, port: http }
+            periodSeconds: 20
+          readinessProbe:
+            httpGet: { path: /login, port: http }
+            periodSeconds: 5
+          resources: {{- toYaml .Values.console.resources | nindent 12 }}

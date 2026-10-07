@@ -1,0 +1,33 @@
+{
+  "id": "39a976f3-5000-46d1-a5ed-7ddf5e8aa361",
+  "number": 32,
+  "title": "PodCrashLooping on payments",
+  "opened_at": "2026-10-06T19:53:13.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "PodCrashLooping",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-06T19:53:13.201Z",
+      "summary": "payments: container restarted 2.034 times in 10 minutes"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-06T19:45:13.201Z",
+      "summary": "gateway: 5.431% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-06T19:37:23.201Z",
+      "summary": "orders: p95 latency is 2.083s"
+    }
+  ]
+}

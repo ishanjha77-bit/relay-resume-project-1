@@ -1,0 +1,56 @@
+diff --git a/sandbox/services/orders/src/main/java/dev/relay/sandbox/orders/pricing/DiscountService.java b/sandbox/services/orders/src/main/java/dev/relay/sandbox/orders/pricing/DiscountService.java
+index f4ef13c..8f6957e 100644
+--- a/sandbox/services/orders/src/main/java/dev/relay/sandbox/orders/pricing/DiscountService.java
++++ b/sandbox/services/orders/src/main/java/dev/relay/sandbox/orders/pricing/DiscountService.java
+@@ -12,15 +12,16 @@ public class DiscountService {
+             "FALL10", 10,
+             "VIP20", 20);
+ 
+-    /** Applies a discount code to a subtotal. Missing or unknown codes leave it unchanged. */
++    /** Cap on the combined discount when codes are stacked ("FALL10+VIP20"). */
++    private static final int MAX_STACKED_PERCENT = 25;
++
++    /** Applies one or more '+'-separated discount codes to a subtotal. Unknown codes are ignored. */
+     public long apply(String code, long subtotalCents) {
+-        if (code == null || code.isBlank()) {
+-            return subtotalCents;
+-        }
+-        Integer percent = PERCENT_OFF.get(code.trim().toUpperCase(Locale.ROOT));
+-        if (percent == null) {
+-            return subtotalCents;
++        int percent = 0;
++        for (String part : code.trim().split("\\+")) {
++            percent += PERCENT_OFF.getOrDefault(part.trim().toUpperCase(Locale.ROOT), 0);
+         }
++        percent = Math.min(percent, MAX_STACKED_PERCENT);
+         return subtotalCents - subtotalCents * percent / 100;
+     }
+ }
+diff --git a/sandbox/services/orders/src/test/java/dev/relay/sandbox/orders/pricing/DiscountServiceTest.java b/sandbox/services/orders/src/test/java/dev/relay/sandbox/orders/pricing/DiscountServiceTest.java
+index e56a551..0b97fe9 100644
+--- a/sandbox/services/orders/src/test/java/dev/relay/sandbox/orders/pricing/DiscountServiceTest.java
++++ b/sandbox/services/orders/src/test/java/dev/relay/sandbox/orders/pricing/DiscountServiceTest.java
+@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
+ 
+ import org.junit.jupiter.api.Test;
+ import org.junit.jupiter.params.ParameterizedTest;
+-import org.junit.jupiter.params.provider.NullAndEmptySource;
++import org.junit.jupiter.params.provider.EmptySource;
+ import org.junit.jupiter.params.provider.ValueSource;
+ 
+ class DiscountServiceTest {
+@@ -17,8 +17,13 @@ class DiscountServiceTest {
+         assertThat(discounts.apply("VIP20", 10_000)).isEqualTo(8_000);
+     }
+ 
++    @Test
++    void stacksCodesUpToTheCap() {
++        assertThat(discounts.apply("FALL10+VIP20", 10_000)).isEqualTo(7_500);
++    }
++
+     @ParameterizedTest
+-    @NullAndEmptySource
++    @EmptySource
+     @ValueSource(strings = {"   ", "NOPE"})
+     void leavesSubtotalUnchangedWithoutAValidCode(String code) {
+         assertThat(discounts.apply(code, 10_000)).isEqualTo(10_000);

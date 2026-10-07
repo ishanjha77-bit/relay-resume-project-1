@@ -1,0 +1,11 @@
+id: slow-query
+title: The index behind 'my orders' is dropped; queries become sequential scans
+chaos: slow-query              # sandbox/chaos/slow-query.sh
+expected:
+  category: [slow_query]   # top hypothesis category must be one of these
+  service: [orders, postgres]    # ...and its service one of these
+  fix: "Recreate orders_customer_created_idx (CREATE INDEX CONCURRENTLY)."
+  fix_keywords: ["index"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

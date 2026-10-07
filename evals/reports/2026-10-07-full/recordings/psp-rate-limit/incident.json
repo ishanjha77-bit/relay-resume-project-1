@@ -1,0 +1,57 @@
+{
+  "id": "34240e00-3a08-4ef5-bac1-6899b0da624e",
+  "number": 58,
+  "title": "HighErrorRate on gateway (+2 more)",
+  "opened_at": "2026-10-07T08:59:13.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T08:59:13.201Z",
+      "summary": "gateway: 12.74% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "inventory",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-07T08:42:33.201Z",
+      "summary": "inventory: 7.297% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T08:59:13.201Z",
+      "summary": "orders: 25.34% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T08:59:13.201Z",
+      "summary": "payments: 33.42% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "gateway",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-07T08:54:43.201Z",
+      "summary": "gateway: p95 latency is 1.289s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-07T08:54:53.201Z",
+      "summary": "orders: p95 latency is 1.015s"
+    }
+  ]
+}

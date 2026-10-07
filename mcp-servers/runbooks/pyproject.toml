@@ -1,0 +1,27 @@
+[project]
+name = "relay-mcp-runbooks"
+version = "0.1.0"
+description = "MCP server: hybrid (full-text + vector) search over Relay's runbooks and postmortems in Postgres/pgvector."
+requires-python = ">=3.12"
+dependencies = [
+    "relay-mcp-kit",
+    "psycopg[binary,pool]>=3.2",
+    "fastembed>=0.7",
+]
+
+[project.scripts]
+relay-mcp-runbooks = "runbooks.server:main"
+
+[tool.uv.sources]
+relay-mcp-kit = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/runbooks"]
+
+# The runbooks ship inside the wheel, next to the code that indexes them.
+[tool.hatch.build.targets.wheel.force-include]
+"content" = "runbooks/content"

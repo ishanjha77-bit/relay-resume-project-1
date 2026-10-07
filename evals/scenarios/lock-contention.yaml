@@ -1,0 +1,11 @@
+id: lock-contention
+title: Inventory's stock-reconciliation job holds row locks on the hottest SKUs
+chaos: lock-contention              # sandbox/chaos/lock-contention.sh
+expected:
+  category: [lock_contention]   # top hypothesis category must be one of these
+  service: [inventory, postgres]    # ...and its service one of these
+  fix: "Disable the reconciliation job; rewrite it to lock one SKU at a time for milliseconds."
+  fix_keywords: ["reconciliation", "lock"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

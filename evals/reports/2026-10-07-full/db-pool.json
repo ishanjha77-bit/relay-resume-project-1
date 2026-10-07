@@ -1,0 +1,128 @@
+{
+  "scenario": "db-pool",
+  "category": "db_pool_exhaustion",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "db_pool_exhaustion",
+  "top_service": "orders",
+  "confidence": 0.9,
+  "fix_score": 0.667,
+  "citations_verified": 0.75,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 8,
+  "prompt_tokens": 123519,
+  "output_tokens": 4352,
+  "cache_read_tokens": 0,
+  "cost_usd": 0.0,
+  "seconds": 546.5,
+  "agent_seconds": 423.6,
+  "model": "gemini-3-flash-preview+gemini-3.7-flash+gemini-3.5-flash+gemini-3.5-flash-lite",
+  "incident_id": "700999c7-f439-4d76-8f30-3f65660e339c",
+  "run_id": "run-8457858b9f65",
+  "details": {
+    "expected": {
+      "category": [
+        "db_pool_exhaustion"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Find and fix the code path that borrows connections without returning them; restart orders to release them now.",
+      "fix_keywords": [
+        "connection",
+        "leak",
+        "pool"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "db_pool_exhaustion",
+        "service": "orders",
+        "component": "HikariCP pool orders-db",
+        "confidence": 0.9,
+        "verdict": "1 of 3 citations unverified"
+      },
+      {
+        "rank": 1,
+        "category": "db_pool_exhaustion",
+        "service": "inventory",
+        "component": "HikariCP pool inventory-db",
+        "confidence": 0.7,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The orders service reached database connection pool exhaustion due to a connection leak in version 1.3.0. This caused all subsequent database-dependent requests to fail after a 2-second timeout. The inventory service was also unstable, likely accelerating the leak in orders due to failed outbound calls.",
+    "triage": {
+      "severity": "critical",
+      "service": "orders",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-error-rate",
+        "runbook:pod-crashloop",
+        "runbook:go-memory-goroutines"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T07:51:02.765176Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-49 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T07:51:02.765176Z",
+        "kind": "alert.resolved",
+        "message": "PodCrashLooping on inventory resolved: inventory: container restarted 2.142 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T07:51:02.765176Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 32.62% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:51:02.765176Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 70.17% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:51:05.179Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with orders. Users are experiencing high error rates when interacting with the gateway and orders services due to upstream failures and pod instability in inventory."
+      },
+      {
+        "at": "2026-10-07T07:51:05.182Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T07:52:02.757477Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 3.718s"
+      },
+      {
+        "at": "2026-10-07T07:52:02.757477Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 4.206s"
+      },
+      {
+        "at": "2026-10-07T07:58:06.398Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: db_pool_exhaustion in orders (confidence 0.90)"
+      },
+      {
+        "at": "2026-10-07T07:58:18.860Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.90 -> 0.90)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T07:48:59.852637+00:00"
+}

@@ -1,0 +1,136 @@
+{
+  "scenario": "gateway-timeout",
+  "category": "config_error",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "config_error",
+  "top_service": "gateway",
+  "confidence": 0.9,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "fix_proposed": true,
+  "fix_unneeded": null,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 8,
+  "prompt_tokens": 141151,
+  "output_tokens": 5943,
+  "cache_read_tokens": 55412,
+  "cost_usd": 0.0,
+  "seconds": 268.0,
+  "agent_seconds": 78.1,
+  "model": "gemini-3-flash-preview+gemini-3.5-flash-lite+gemini-3.5-flash",
+  "incident_id": "b0f138c9-dc2d-460e-91ea-237f96a93451",
+  "run_id": "run-3ebe66d3df7d",
+  "details": {
+    "expected": {
+      "category": [
+        "config_error"
+      ],
+      "service": [
+        "gateway"
+      ],
+      "fix": "Revert UPSTREAM_TIMEOUT_MS to 4000.",
+      "fix_keywords": [
+        "timeout",
+        "revert",
+        "4000"
+      ],
+      "change": "gateway: tighten upstream timeouts to protect the edge (#87)"
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "config_error",
+        "service": "gateway",
+        "component": "gateway UPSTREAM_TIMEOUT_MS",
+        "confidence": 0.9,
+        "verdict": "verified"
+      },
+      {
+        "rank": 1,
+        "category": "db_pool_exhaustion",
+        "service": "orders",
+        "component": "HikariCP pool orders-db / inventory-db",
+        "confidence": 0.7,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The gateway service started failing requests after a configuration change tightened its upstream timeout to 80ms. This timeout is too aggressive given that downstream services (orders and inventory) are experiencing intermittent high latency due to database connection pool exhaustion. While the connection pool issue predates the gateway alert, the timeout change turned slow requests into hard errors for users.",
+    "triage": {
+      "severity": "critical",
+      "service": "gateway",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-latency",
+        "runbook:triage-high-error-rate",
+        "runbook:gateway-upstream"
+      ]
+    },
+    "proposals": [
+      "Revert \"gateway: tighten upstream timeouts to protect the edge (#87)\""
+    ],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T08:03:52.700372Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-50 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T08:03:52.700372Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 6.818% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:03:52.700372Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on orders resolved: orders: p95 latency is 2.005s"
+      },
+      {
+        "at": "2026-10-07T08:03:54.902Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with gateway. Users are experiencing a high error rate when making requests through the gateway."
+      },
+      {
+        "at": "2026-10-07T08:03:54.906Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T08:04:52.691524Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on gateway resolved: gateway: 5.26% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:04:52.691524Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on orders resolved: orders: 8.457% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:04:52.691524Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on gateway resolved: gateway: p95 latency is 1.56s"
+      },
+      {
+        "at": "2026-10-07T08:05:10.799Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: config_error in gateway (confidence 0.90)"
+      },
+      {
+        "at": "2026-10-07T08:05:33.805Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.90 -> 0.90)"
+      },
+      {
+        "at": "2026-10-07T08:05:34.077Z",
+        "kind": "approval.requested",
+        "message": "Relay asks to: Revert \"gateway: tighten upstream timeouts to protect the edge (#87)\" (risk low)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T08:00:42.754455+00:00"
+}

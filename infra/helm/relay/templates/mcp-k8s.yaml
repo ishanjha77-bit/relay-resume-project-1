@@ -1,0 +1,82 @@
+{{- /* The Kubernetes MCP server: read-only, and only on the sandbox namespace. */ -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mcp-k8s
+  labels: {{- include "relay.labels" "mcp-k8s" | nindent 4 }}
+---
+# get/list/watch and nothing else: no secrets, no exec, no writes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: relay-mcp-k8s-readonly
+  namespace: {{ .Values.mcp.sandboxNamespace }}
+  labels: {{- include "relay.labels" "mcp-k8s" | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: [pods, events]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, replicasets]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: relay-mcp-k8s-readonly
+  namespace: {{ .Values.mcp.sandboxNamespace }}
+  labels: {{- include "relay.labels" "mcp-k8s" | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: relay-mcp-k8s-readonly
+subjects:
+  - kind: ServiceAccount
+    name: mcp-k8s
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-k8s
+  labels: {{- include "relay.labels" "mcp-k8s" | nindent 4 }}
+spec:
+  selector: {{- include "relay.selector" "mcp-k8s" | nindent 4 }}
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-k8s
+  labels: {{- include "relay.labels" "mcp-k8s" | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "relay.selector" "mcp-k8s" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" "mcp-k8s" | nindent 8 }}
+    spec:
+      serviceAccountName: mcp-k8s
+      enableServiceLinks: false
+      containers:
+        - name: mcp-k8s
+          image: {{ .Values.images.mcpK8s }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8000 }
+          env:
+            - { name: PORT, value: "8000" }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_TOKEN" "key" "mcp-k8s-token") | nindent 12 }}
+            - { name: SANDBOX_NAMESPACE, value: {{ .Values.mcp.sandboxNamespace | quote }} }
+            - { name: MCP_ALLOWED_HOSTS, value: "mcp-k8s:*,mcp-k8s.{{ .Release.Namespace }}.svc.cluster.local:*,localhost:*,127.0.0.1:*" }
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+          resources: {{- toYaml .Values.mcp.resources | nindent 12 }}

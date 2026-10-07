@@ -1,0 +1,11 @@
+id: goroutine-leak
+title: Payments leaks goroutines until it is OOMKilled
+chaos: goroutine-leak              # sandbox/chaos/goroutine-leak.sh
+expected:
+  category: [memory_leak]   # top hypothesis category must be one of these
+  service: [payments]    # ...and its service one of these
+  fix: "Find the leaking goroutines (pprof goroutine profile); restart payments."
+  fix_keywords: ["goroutine", "leak"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

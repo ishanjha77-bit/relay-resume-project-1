@@ -1,0 +1,33 @@
+{
+  "id": "d20168cb-f779-4197-af6e-90a6191865fe",
+  "number": 60,
+  "title": "HighErrorRate on gateway",
+  "opened_at": "2026-10-07T09:10:43.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T09:10:43.201Z",
+      "summary": "gateway: 32.81% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-07T08:59:13.201Z",
+      "summary": "payments: 6.061% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "inventory",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-07T09:05:13.201Z",
+      "summary": "inventory: p95 latency is 1.997s"
+    }
+  ]
+}

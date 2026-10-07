@@ -1,0 +1,154 @@
+{
+  "scenario": "config-error",
+  "category": "config_error",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "config_error",
+  "top_service": "inventory",
+  "confidence": 0.9,
+  "fix_score": 0.667,
+  "citations_verified": 1.0,
+  "fix_proposed": true,
+  "fix_unneeded": null,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 7,
+  "prompt_tokens": 76361,
+  "output_tokens": 4753,
+  "cache_read_tokens": 17378,
+  "cost_usd": 0.0,
+  "seconds": 287.7,
+  "agent_seconds": 162.0,
+  "model": "gemini-3-flash-preview+gemini-3.5-flash-lite+gemini-3.8-flash",
+  "incident_id": "db10f1f9-76a4-4fdd-b3b3-a4173a51bd5d",
+  "run_id": "run-fe54a51e8636",
+  "details": {
+    "expected": {
+      "category": [
+        "config_error"
+      ],
+      "service": [
+        "inventory"
+      ],
+      "fix": "Revert DB_URL to postgres:5432 (roll back the config change).",
+      "fix_keywords": [
+        "db_url",
+        "revert",
+        "rollback"
+      ],
+      "change": "inventory: move to the new primary database endpoint (#164)"
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "config_error",
+        "service": "inventory",
+        "component": "inventory.env.DB_URL",
+        "confidence": 0.9,
+        "verdict": "verified"
+      },
+      {
+        "rank": 1,
+        "category": "bad_deploy",
+        "service": "orders",
+        "component": "DiscountService.apply",
+        "confidence": 0.9,
+        "verdict": "verified"
+      },
+      {
+        "rank": 2,
+        "category": "db_pool_exhaustion",
+        "service": "inventory",
+        "component": "HikariCP pool inventory-db",
+        "confidence": 0.3,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The incident began with a bad deployment of orders (v1.4.0) causing NullPointerExceptions. Following a rollback of orders, the inventory service suffered from database connection pool exhaustion and resource saturation. An attempt to migrate inventory to a new database endpoint ('postgres-primary') failed because the endpoint did not exist, causing the service to enter a CrashLoopBackOff.",
+    "triage": {
+      "severity": "critical",
+      "service": "inventory",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:pod-crashloop",
+        "runbook:go-memory-goroutines",
+        "runbook:triage-high-error-rate"
+      ]
+    },
+    "proposals": [
+      "Revert \"inventory: move to the new primary database endpoint (#164)\""
+    ],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T07:26:22.872107Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-47 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T07:26:22.872107Z",
+        "kind": "alert.firing",
+        "message": "PodCrashLooping on inventory firing: inventory: container restarted 2.044 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T07:26:22.872107Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on orders resolved: orders: 7.982% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:26:25.063Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with inventory. The inventory service is crash-looping, causing request failures and high latency for the gateway and users."
+      },
+      {
+        "at": "2026-10-07T07:26:25.066Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T07:27:22.866676Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on gateway resolved: gateway: 6.133% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:27:22.866676Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on inventory resolved: inventory: 8.83% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:27:22.866676Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on gateway resolved: gateway: p95 latency is 1.688s"
+      },
+      {
+        "at": "2026-10-07T07:27:22.866676Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on orders resolved: orders: p95 latency is 1.019s"
+      },
+      {
+        "at": "2026-10-07T07:28:22.863971Z",
+        "kind": "alert.firing",
+        "message": "DeploymentReplicasUnavailable on inventory firing: inventory: 1 replica(s) unavailable for 3 minutes"
+      },
+      {
+        "at": "2026-10-07T07:29:04.912Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: config_error in inventory (confidence 0.90)"
+      },
+      {
+        "at": "2026-10-07T07:29:50.478Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.90 -> 0.90)"
+      },
+      {
+        "at": "2026-10-07T07:29:50.742Z",
+        "kind": "approval.requested",
+        "message": "Relay asks to: Revert \"inventory: move to the new primary database endpoint (#164)\" (risk low)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T07:24:17.210545+00:00"
+}

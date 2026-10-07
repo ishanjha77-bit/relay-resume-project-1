@@ -1,0 +1,81 @@
+{
+  "scenario": "lock-contention",
+  "category": "lock_contention",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "lock_contention",
+  "top_service": "inventory",
+  "confidence": 0.95,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "injection_ok": true,
+  "steps": 8,
+  "llm_calls": 7,
+  "prompt_tokens": 122270,
+  "output_tokens": 2597,
+  "cache_read_tokens": 60005,
+  "cost_usd": 0.0,
+  "seconds": 160.0,
+  "agent_seconds": 42.6,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "ec617a10-9e6a-41ab-b52a-0aed2c2cc52f",
+  "run_id": "run-7e0ec36a7dc1",
+  "details": {
+    "expected": {
+      "category": [
+        "lock_contention"
+      ],
+      "service": [
+        "inventory",
+        "postgres"
+      ],
+      "fix": "Disable the reconciliation job; rewrite it to lock one SKU at a time for milliseconds.",
+      "fix_keywords": [
+        "reconciliation",
+        "lock"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "lock_contention",
+        "service": "inventory",
+        "component": "StockReconciliationJob / products table locks",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "An incident affecting gateway and orders was caused by lock contention on the PostgreSQL database due to inventory stock reconciliation jobs. This caused inventory reservation requests to time out, triggering errors in orders and gateway.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T11:19:09.197203Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-13 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T11:19:09.197203Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 14.18% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:19:09.197203Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 25.76% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:19:09.342Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T11:19:51.837Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: lock_contention in inventory (confidence 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T11:17:11.833562+00:00"
+}

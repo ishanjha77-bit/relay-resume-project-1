@@ -1,0 +1,912 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relay.dev/contracts/agent-event.schema.json",
+  "title": "agent event",
+  "description": "Published by agent-service on the Redis stream `relay.agent-events`, one event per agent step; consumed by platform-api, which persists it and streams it to the console. `seq` increases by one per run, so (run_id, seq) is the idempotency key for at-least-once delivery.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "type",
+    "run_id",
+    "incident_id",
+    "seq",
+    "at",
+    "data"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "type": {
+      "enum": [
+        "triage.completed",
+        "run.started",
+        "llm.completed",
+        "agent.progress",
+        "tool.called",
+        "budget.exhausted",
+        "investigation.concluded",
+        "run.failed",
+        "approval.requested",
+        "action.executed",
+        "action.failed",
+        "review.completed",
+        "run.finished",
+        "postmortem.written"
+      ]
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "agent": {
+      "type": "string",
+      "description": "The agent that produced the step (investigator, triage, ...); default investigator."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "triage.completed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/triageCompleted"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "run.started"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/runStarted"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "llm.completed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/llmCompleted"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "agent.progress"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/agentProgress"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "tool.called"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/toolCalled"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "budget.exhausted"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/budgetExhausted"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "investigation.concluded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/investigationConcluded"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "run.failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/runFailed"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "approval.requested"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/approvalRequested"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "action.executed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/actionExecuted"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "action.failed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/actionFailed"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "review.completed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/reviewCompleted"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "run.finished"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/runFinished"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "postmortem.written"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/postmortemWritten"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "triageCompleted": {
+      "type": "object",
+      "description": "The triage agent's first look at the incident, before the investigation: the service graph around the alerting services, the runbooks and postmortems the alerts resemble, and a small model's assessment. The assessment fields are null when the model gave none; `errors` says why.",
+      "required": [
+        "severity",
+        "service",
+        "summary",
+        "leads",
+        "query",
+        "related",
+        "model",
+        "errors"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "critical",
+            "warning",
+            "info",
+            null
+          ],
+          "description": "Can only raise the incident's severity."
+        },
+        "service": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "leads": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 3
+        },
+        "query": {
+          "type": "string",
+          "description": "What the knowledge base was searched for."
+        },
+        "related": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "doc_id",
+              "kind",
+              "title",
+              "section",
+              "score",
+              "text"
+            ],
+            "properties": {
+              "doc_id": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "runbook",
+                  "postmortem"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "section": {
+                "type": "string"
+              },
+              "score": {
+                "type": "number"
+              },
+              "text": {
+                "type": "string",
+                "description": "The document's best-matching passage, clipped."
+              }
+            }
+          }
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "description": "Who called whom in the last minutes, from traces (metrics__service_dependencies).",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "to",
+              "rps",
+              "failed_ratio"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "rps": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "failed_ratio": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "p95_s": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "upstream": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The alerting services' callers, transitively: who feels it."
+        },
+        "downstream": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "What the alerting services call, transitively: where it may come from."
+        }
+      }
+    },
+    "runStarted": {
+      "type": "object",
+      "required": [
+        "title",
+        "model",
+        "tools",
+        "tool_budget"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "effort": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tools": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tool_budget": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "llmCompleted": {
+      "type": "object",
+      "required": [
+        "model",
+        "stop_reason",
+        "prompt_tokens",
+        "cache_read_tokens",
+        "output_tokens",
+        "cost_usd",
+        "latency_ms"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "stop_reason": {
+          "type": "string"
+        },
+        "prompt_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cache_read_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "latency_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "request_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "agentProgress": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "toolCalled": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "tool",
+        "arguments",
+        "is_error",
+        "latency_ms",
+        "chars",
+        "injection_markers",
+        "output"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^E[0-9]+$"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object"
+        },
+        "is_error": {
+          "type": "boolean"
+        },
+        "latency_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "injection_markers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "output": {
+          "type": "string"
+        }
+      }
+    },
+    "budgetExhausted": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "investigationConcluded": {
+      "type": "object",
+      "required": [
+        "report",
+        "checks",
+        "tool_calls",
+        "llm_calls",
+        "cost_usd",
+        "usage"
+      ],
+      "properties": {
+        "report": {
+          "type": "object",
+          "required": [
+            "summary",
+            "impact",
+            "affected_services",
+            "hypotheses",
+            "injection_suspected"
+          ],
+          "properties": {
+            "hypotheses": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "category",
+                  "service",
+                  "component",
+                  "summary",
+                  "confidence",
+                  "evidence",
+                  "suggested_fix"
+                ]
+              }
+            }
+          }
+        },
+        "checks": {
+          "type": "array"
+        },
+        "tool_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "llm_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "usage": {
+          "type": "object"
+        }
+      }
+    },
+    "runFailed": {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "approvalRequested": {
+      "type": "object",
+      "description": "The agent wants to act and waits for a human. `action` is the exact JSON text the approval will be bound to (its SHA-256 goes in the approval token); `diff` is what the approver reads.",
+      "required": [
+        "approval_id",
+        "kind",
+        "title",
+        "risk",
+        "rationale",
+        "diff",
+        "action"
+      ],
+      "properties": {
+        "approval_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "revert_change"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "risk": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "diff": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    },
+    "actionExecuted": {
+      "type": "object",
+      "required": [
+        "approval_id",
+        "result"
+      ],
+      "properties": {
+        "approval_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "result": {
+          "type": "object"
+        }
+      }
+    },
+    "actionFailed": {
+      "type": "object",
+      "required": [
+        "approval_id",
+        "error"
+      ],
+      "properties": {
+        "approval_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "reviewCompleted": {
+      "type": "object",
+      "description": "The reviewer's verdict on each hypothesis of the concluded report. `reviews` and `order` are in the reviewed ranking; `rank` and `order` refer to the report's original ranks. Confidence is never raised.",
+      "required": [
+        "reviews",
+        "order",
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "order": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "rank",
+              "verdict",
+              "confidence",
+              "original_confidence",
+              "reason"
+            ],
+            "properties": {
+              "rank": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "verdict": {
+                "enum": [
+                  "supported",
+                  "weak",
+                  "unsupported"
+                ]
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "original_confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "runFinished": {
+      "type": "object",
+      "description": "The run is done: investigation, review and any fix proposal. The last event of a successful run.",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "concluded"
+          ]
+        }
+      }
+    },
+    "postmortemWritten": {
+      "type": "object",
+      "description": "A blameless postmortem of a resolved incident, written from the facts in its incident.resolved message. `markdown` renders `postmortem`; the platform stores both and indexes the document for the knowledge base.",
+      "required": [
+        "postmortem",
+        "markdown",
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "markdown": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postmortem": {
+          "type": "object",
+          "required": [
+            "title",
+            "summary",
+            "impact",
+            "detection",
+            "root_cause",
+            "resolution",
+            "timeline",
+            "action_items",
+            "lessons"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "string"
+            },
+            "impact": {
+              "type": "string"
+            },
+            "detection": {
+              "type": "string"
+            },
+            "root_cause": {
+              "type": "string"
+            },
+            "resolution": {
+              "type": "string"
+            },
+            "timeline": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "at",
+                  "event"
+                ],
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "event": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "action_items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "item",
+                  "priority"
+                ],
+                "properties": {
+                  "item": {
+                    "type": "string"
+                  },
+                  "owner": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "priority": {
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low"
+                    ]
+                  }
+                }
+              }
+            },
+            "lessons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

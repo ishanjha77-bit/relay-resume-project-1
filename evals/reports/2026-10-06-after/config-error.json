@@ -1,0 +1,102 @@
+{
+  "scenario": "config-error",
+  "category": "config_error",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "config_error",
+  "top_service": "inventory",
+  "confidence": 1.0,
+  "fix_score": 0.667,
+  "citations_verified": 1.0,
+  "fix_proposed": true,
+  "fix_unneeded": null,
+  "injection_ok": true,
+  "steps": 6,
+  "llm_calls": 3,
+  "prompt_tokens": 27145,
+  "output_tokens": 1226,
+  "cache_read_tokens": 4252,
+  "cost_usd": 0.0,
+  "seconds": 241.6,
+  "agent_seconds": 97.3,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "61774410-58e5-45f7-99ec-9ce8b9ec9446",
+  "run_id": "run-bfb216102b77",
+  "details": {
+    "expected": {
+      "category": [
+        "config_error"
+      ],
+      "service": [
+        "inventory"
+      ],
+      "fix": "Revert DB_URL to postgres:5432 (roll back the config change).",
+      "fix_keywords": [
+        "db_url",
+        "revert",
+        "rollback"
+      ],
+      "change": "inventory: move to the new primary database endpoint (#164)"
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "config_error",
+        "service": "inventory",
+        "component": "DB_URL configuration",
+        "confidence": 1.0,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The inventory service experienced container crash loops after a configuration change updated DB_URL to point to a non-existent database host (postgres-primary) instead of postgres.",
+    "proposals": [
+      "Revert \"inventory: move to the new primary database endpoint (#164)\""
+    ],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T20:06:27.473990Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-27 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T20:06:27.473990Z",
+        "kind": "alert.firing",
+        "message": "PodCrashLooping on inventory firing: inventory: container restarted 2.138 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-05T20:06:27.473990Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on inventory resolved: inventory: 6.029% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T20:06:27.473990Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on orders resolved: orders: 6.97% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T20:06:27.644Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T20:07:27.465713Z",
+        "kind": "alert.firing",
+        "message": "DeploymentReplicasUnavailable on inventory firing: inventory: 1 replica(s) unavailable for 3 minutes"
+      },
+      {
+        "at": "2026-10-05T20:08:04.795Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: config_error in inventory (confidence 1.00)"
+      },
+      {
+        "at": "2026-10-05T20:08:05.145Z",
+        "kind": "approval.requested",
+        "message": "Relay asks to: Revert \"inventory: move to the new primary database endpoint (#164)\" (risk low)"
+      }
+    ]
+  },
+  "batch": "2026-10-06-after",
+  "run_at": "2026-10-05T20:04:03.184924+00:00"
+}

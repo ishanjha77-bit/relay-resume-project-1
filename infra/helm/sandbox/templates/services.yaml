@@ -1,0 +1,25 @@
+{{- include "sandbox.service" (dict "root" . "name" "gateway" "svc" .Values.gateway "env" (list
+      (dict "name" "ORDERS_URL" "value" "http://orders:8080")
+      (dict "name" "INVENTORY_URL" "value" "http://inventory:8080")
+      (dict "name" "UPSTREAM_TIMEOUT_MS" "value" (toString .Values.gateway.upstreamTimeoutMs))
+    )) }}
+---
+{{ include "sandbox.service" (dict "root" . "name" "payments" "svc" .Values.payments "env" (list
+      (dict "name" "FLAGS_REDIS_ADDR" "value" "redis:6379")
+    )) }}
+---
+{{ include "sandbox.service" (dict "root" . "name" "orders" "svc" .Values.orders "java" true "env" (list
+      (dict "name" "DB_URL" "value" "jdbc:postgresql://postgres:5432/orders")
+      (dict "name" "DB_USER" "value" "orders")
+      (dict "name" "DB_PASSWORD" "value" "orders")
+      (dict "name" "FLAGS_REDIS_HOST" "value" "redis")
+      (dict "name" "INVENTORY_URL" "value" "http://inventory:8080")
+      (dict "name" "PAYMENTS_URL" "value" "http://payments:8080")
+    )) }}
+---
+{{ include "sandbox.service" (dict "root" . "name" "inventory" "svc" .Values.inventory "java" true "env" (list
+      (dict "name" "DB_URL" "value" "jdbc:postgresql://postgres:5432/inventory")
+      (dict "name" "DB_USER" "value" "inventory")
+      (dict "name" "DB_PASSWORD" "value" "inventory")
+      (dict "name" "REDIS_HOST" "value" "redis")
+    )) }}

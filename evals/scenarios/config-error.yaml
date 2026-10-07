@@ -1,0 +1,12 @@
+id: config-error
+title: Inventory points at a database host that doesn't exist; new pods crash-loop
+chaos: config-error              # sandbox/chaos/config-error.sh
+expected:
+  category: [config_error]   # top hypothesis category must be one of these
+  service: [inventory]    # ...and its service one of these
+  fix: "Revert DB_URL to postgres:5432 (roll back the config change)."
+  fix_keywords: ["db_url", "revert", "rollback"]
+  change: "inventory: move to the new primary database endpoint (#164)"   # the commit the fixer should propose reverting
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

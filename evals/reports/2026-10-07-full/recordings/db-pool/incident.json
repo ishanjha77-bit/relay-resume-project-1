@@ -1,0 +1,33 @@
+{
+  "id": "700999c7-f439-4d76-8f30-3f65660e339c",
+  "number": 49,
+  "title": "HighErrorRate on gateway (+1 more)",
+  "opened_at": "2026-10-07T07:50:33.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "PodCrashLooping",
+      "service": "inventory",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-07T07:26:03.201Z",
+      "summary": "inventory: container restarted 2.142 times in 10 minutes"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T07:50:33.201Z",
+      "summary": "gateway: 32.62% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T07:50:33.201Z",
+      "summary": "orders: 70.17% of requests are failing"
+    }
+  ]
+}

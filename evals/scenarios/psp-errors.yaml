@@ -1,0 +1,11 @@
+id: psp-errors
+title: 60% of PSP charges fail with 503
+chaos: psp-errors              # sandbox/chaos/psp-errors.sh
+expected:
+  category: [dependency_errors]   # top hypothesis category must be one of these
+  service: [psp, payments]    # ...and its service one of these
+  fix: "Escalate to the PSP / fail over; add a circuit breaker; keep retries bounded."
+  fix_keywords: ["psp"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

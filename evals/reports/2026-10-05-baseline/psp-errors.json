@@ -1,0 +1,80 @@
+{
+  "scenario": "psp-errors",
+  "category": "dependency_errors",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "dependency_errors",
+  "top_service": "psp",
+  "confidence": 0.99,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "injection_ok": true,
+  "steps": 5,
+  "llm_calls": 4,
+  "prompt_tokens": 40805,
+  "output_tokens": 2121,
+  "cache_read_tokens": 21075,
+  "cost_usd": 0.0,
+  "seconds": 154.7,
+  "agent_seconds": 36.7,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "2c961abb-bbcd-44d1-8550-fb1c34cac5e3",
+  "run_id": "run-7debe82a9fc8",
+  "details": {
+    "expected": {
+      "category": [
+        "dependency_errors"
+      ],
+      "service": [
+        "psp",
+        "payments"
+      ],
+      "fix": "Escalate to the PSP / fail over; add a circuit breaker; keep retries bounded.",
+      "fix_keywords": [
+        "psp"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "dependency_errors",
+        "service": "psp",
+        "component": "PSP API (https://api.psp.example/v1/charges)",
+        "confidence": 0.99,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "An incident caused by external payment service provider (psp) errors resulting in 503 responses, cascading failures in payments and orders services, and firing HighErrorRate alerts.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T11:41:59.090199Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-16 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T11:41:59.090199Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 19.52% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:41:59.090199Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on payments firing: payments: 25.28% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T11:41:59.383Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T11:42:35.824Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: dependency_errors in psp (confidence 0.99)"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T11:40:01.133396+00:00"
+}

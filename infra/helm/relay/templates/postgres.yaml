@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: relay-postgres
+  labels: {{- include "relay.labels" "relay-postgres" | nindent 4 }}
+spec:
+  type: NodePort
+  selector: {{- include "relay.selector" "relay-postgres" | nindent 4 }}
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+      nodePort: {{ .Values.nodePorts.postgres }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: relay-postgres
+  labels: {{- include "relay.labels" "relay-postgres" | nindent 4 }}
+spec:
+  serviceName: relay-postgres
+  replicas: 1
+  selector:
+    matchLabels: {{- include "relay.selector" "relay-postgres" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" "relay-postgres" | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: postgres
+          image: {{ .Values.images.postgres }}
+          env:
+            - { name: POSTGRES_DB, value: relay }
+            - { name: POSTGRES_USER, value: relay }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "POSTGRES_PASSWORD" "key" "postgres-password") | nindent 12 }}
+          ports:
+            - { name: postgres, containerPort: 5432 }
+          readinessProbe:
+            exec:
+              command: [pg_isready, -U, relay, -d, relay]
+            periodSeconds: 5
+          resources: {{- toYaml .Values.postgres.resources | nindent 12 }}
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storage }}

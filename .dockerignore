@@ -1,0 +1,13 @@
+# The repository root is the build context of the Python images only
+# (infra/docker/python-service.Dockerfile). Send just what they need, and never .env.
+*
+!pyproject.toml
+!uv.lock
+!apps/agent-service/
+!mcp-servers/
+**/__pycache__
+**/.pytest_cache
+**/tests
+# The TypeScript MCP server has its own image (and a big node_modules).
+mcp-servers/k8s-readonly
+**/node_modules

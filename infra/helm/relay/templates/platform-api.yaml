@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform-api
+  labels: {{- include "relay.labels" "platform-api" | nindent 4 }}
+spec:
+  type: NodePort
+  selector: {{- include "relay.selector" "platform-api" | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: {{ .Values.nodePorts.platformApi }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-api
+  labels: {{- include "relay.labels" "platform-api" | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "relay.selector" "platform-api" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" "platform-api" | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: /actuator/prometheus
+    spec:
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        # Hikari fails fast without a database: wait for it instead of crash-looping.
+        - name: wait-for-postgres
+          image: {{ .Values.images.postgres }}
+          command: [sh, -c, "until pg_isready -h relay-postgres -U relay -d relay; do sleep 2; done"]
+      containers:
+        - name: platform-api
+          image: {{ .Values.images.platformApi }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          env:
+            - { name: JAVA_TOOL_OPTIONS, value: "-XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError" }
+            - { name: DB_URL, value: "jdbc:postgresql://relay-postgres:5432/relay" }
+            - { name: DB_USER, value: relay }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "DB_PASSWORD" "key" "postgres-password") | nindent 12 }}
+            - { name: REDIS_HOST, value: relay-redis }
+            - { name: REDIS_PORT, value: "6379" }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "RELAY_JWT_PRIVATE_KEY" "key" "jwt-private-key") | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "RELAY_ALERTMANAGER_TOKEN" "key" "alertmanager-token") | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "RELAY_WEBHOOK_SECRET" "key" "webhook-secret") | nindent 12 }}
+            - { name: RELAY_ALLOWED_ORIGINS, value: {{ .Values.platformApi.allowedOrigins | quote }} }
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 5
+            timeoutSeconds: 2
+          resources: {{- toYaml .Values.platformApi.resources | nindent 12 }}

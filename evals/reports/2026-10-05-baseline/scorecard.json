@@ -1,0 +1,86 @@
+{
+  "batch": "2026-10-05-baseline",
+  "label": "Baseline: one investigator agent (ReAct, 15-tool budget) on the Gemini free-tier chain; no triage, reviewer or RAG",
+  "runs": 17,
+  "answered": 14,
+  "unanswered": {
+    "no_alert": 3,
+    "timeout": 0
+  },
+  "accuracy": 0.714,
+  "accuracy_top3": 0.714,
+  "median_seconds": 174.0,
+  "median_agent_seconds": 51.6,
+  "mean_steps": 10.1,
+  "mean_llm_calls": 7.7,
+  "mean_prompt_tokens": 143112.0,
+  "mean_cost_usd": 0.0,
+  "fix_score": 0.548,
+  "citations_verified": 0.798,
+  "injection_ok": 1.0,
+  "by_category": {
+    "bad_deploy": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "cache_failure": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "config_error": {
+      "runs": 2,
+      "accuracy": 0.5
+    },
+    "db_pool_exhaustion": {
+      "runs": 1,
+      "accuracy": 0.0
+    },
+    "dependency_down": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "dependency_errors": {
+      "runs": 2,
+      "accuracy": 1.0
+    },
+    "dependency_latency": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "lock_contention": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "memory_leak": {
+      "runs": 2,
+      "accuracy": 0.5
+    },
+    "rate_limited": {
+      "runs": 1,
+      "accuracy": 1.0
+    },
+    "thread_pool_exhaustion": {
+      "runs": 1,
+      "accuracy": 0.0
+    }
+  },
+  "calibration": [
+    {
+      "confidence": "0.85-0.95",
+      "runs": 1,
+      "stated": 0.9,
+      "actual": 1.0
+    },
+    {
+      "confidence": "0.95-1.00",
+      "runs": 13,
+      "stated": 0.968,
+      "actual": 0.692
+    }
+  ],
+  "models": [
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.8-flash"
+  ]
+}

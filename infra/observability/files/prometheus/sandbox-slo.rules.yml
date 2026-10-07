@@ -1,0 +1,57 @@
+# Symptom-based alerts only (errors, latency, crashes, unavailability).
+# There is deliberately no "DB pool exhausted" or "memory leak" alert: if the
+# alert named the cause there would be nothing left for the agent to diagnose.
+# See docs/adr/0003-symptom-based-alerting.md.
+groups:
+  - name: sandbox-slo
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum by (namespace, service) (rate(http_server_requests_seconds_count{namespace="sandbox", outcome="SERVER_ERROR", uri!~"/actuator.*"}[2m]))
+          /
+            sum by (namespace, service) (rate(http_server_requests_seconds_count{namespace="sandbox", uri!~"/actuator.*"}[2m]))
+          ) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.service }}: {{ $value | humanizePercentage }} of requests are failing"
+          description: More than 5% of HTTP requests to {{ $labels.service }} returned 5xx over the last 2 minutes.
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum by (namespace, service, le) (rate(http_server_requests_seconds_bucket{namespace="sandbox", uri!~"/actuator.*"}[2m]))
+          ) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.service }}: p95 latency is {{ $value | humanizeDuration }}"
+          description: The 95th percentile of HTTP request latency for {{ $labels.service }} has been above 1s for 2 minutes.
+
+      - alert: PodCrashLooping
+        expr: |
+          label_replace(
+            increase(kube_pod_container_status_restarts_total{namespace="sandbox"}[10m]) >= 2,
+            "service", "$1", "container", "(.*)"
+          )
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.service }}: container restarted {{ $value | humanize }} times in 10 minutes"
+          description: Pod {{ $labels.pod }} keeps restarting.
+
+      - alert: DeploymentReplicasUnavailable
+        expr: |
+          label_replace(
+            kube_deployment_status_replicas_unavailable{namespace="sandbox"} > 0,
+            "service", "$1", "deployment", "(.*)"
+          )
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.service }}: {{ $value }} replica(s) unavailable for 3 minutes"
+          description: Deployment {{ $labels.deployment }} has had unavailable replicas for 3 minutes (stuck rollout or failing pods).

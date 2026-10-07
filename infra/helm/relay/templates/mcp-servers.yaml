@@ -1,0 +1,74 @@
+{{- /* The read-only MCP tool servers the agents call; not published outside the cluster. */ -}}
+{{- $dbPassword := dict "name" "PGPASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secretName "key" "postgres-password")) }}
+{{- $gitTokenKey := ternary "github-token" "gitea-relay-token" (eq .Values.deployRepo.host "github") }}
+{{- $gitToken := dict "name" "GIT_TOKEN" "valueFrom" (dict "secretKeyRef" (dict "name" .Values.secretName "key" $gitTokenKey "optional" true)) }}
+{{- $servers := list
+  (dict "name" "mcp-logs" "image" .Values.images.mcpLogs "tokenKey" "mcp-logs-token"
+        "env" (list (dict "name" "LOKI_URL" "value" .Values.mcp.lokiUrl)))
+  (dict "name" "mcp-metrics" "image" .Values.images.mcpMetrics "tokenKey" "mcp-metrics-token"
+        "env" (list (dict "name" "PROMETHEUS_URL" "value" .Values.mcp.prometheusUrl)
+                    (dict "name" "IGNORE_SERVICES" "value" "loadgen,exporter")))
+  (dict "name" "mcp-runbooks" "image" .Values.images.mcpRunbooks "tokenKey" "mcp-runbooks-token"
+        "resources" .Values.mcp.runbooksResources
+        "env" (list (dict "name" "DATABASE_URL" "value" "postgresql://relay@relay-postgres:5432/relay")
+                    $dbPassword
+                    (dict "name" "EMBEDDING_CACHE_DIR" "value" "/app/models")
+                    (dict "name" "HF_HUB_OFFLINE" "value" "1")))
+  (dict "name" "mcp-github" "image" .Values.images.mcpGithub "tokenKey" "mcp-github-token"
+        "env" (list (dict "name" "GIT_HOST" "value" .Values.deployRepo.host)
+                    (dict "name" "GIT_API_URL" "value" .Values.deployRepo.apiUrl)
+                    (dict "name" "GIT_REPO" "value" .Values.deployRepo.repo)
+                    $gitToken
+                    (dict "name" "APPROVAL_JWKS_URL" "value" "http://platform-api:8080/.well-known/jwks.json")
+                    (dict "name" "APPROVAL_ISSUER" "value" "relay-platform")))
+}}
+{{- range $servers }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  labels: {{- include "relay.labels" .name | nindent 4 }}
+spec:
+  selector: {{- include "relay.selector" .name | nindent 4 }}
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  labels: {{- include "relay.labels" .name | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "relay.selector" .name | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" .name | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: {{ .name }}
+          image: {{ .image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8000 }
+          env:
+            - { name: PORT, value: "8000" }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_TOKEN" "key" .tokenKey) | nindent 12 }}
+            - { name: MCP_PUBLIC_URL, value: "http://{{ .name }}:8000/mcp" }
+            # DNS-rebinding protection: the Host headers this server answers to.
+            - { name: MCP_ALLOWED_HOSTS, value: "{{ .name }}:*,{{ .name }}.{{ $.Release.Namespace }}.svc.cluster.local:*,localhost:*,127.0.0.1:*" }
+            - { name: SANDBOX_NAMESPACE, value: {{ $.Values.mcp.sandboxNamespace | quote }} }
+            {{- toYaml .env | nindent 12 }}
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+          resources: {{- toYaml (.resources | default $.Values.mcp.resources) | nindent 12 }}
+{{- end }}

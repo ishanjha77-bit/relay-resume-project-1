@@ -1,0 +1,52 @@
+# Service versions are overridden from sandbox/versions.env by `make sandbox`.
+gateway:
+  version: 2.1.0
+  nodePort: 30088
+  upstreamTimeoutMs: 4000
+  resources:
+    requests: { cpu: 50m, memory: 32Mi }
+    limits: { cpu: 500m, memory: 128Mi }
+
+orders:
+  version: 1.3.0
+  resources:
+    requests: { cpu: 100m, memory: 384Mi }
+    limits: { cpu: "1", memory: 512Mi }
+
+payments:
+  version: 1.8.2
+  resources:
+    requests: { cpu: 50m, memory: 32Mi }
+    limits: { cpu: 500m, memory: 128Mi }
+
+inventory:
+  version: 1.5.1
+  resources:
+    requests: { cpu: 100m, memory: 384Mi }
+    limits: { cpu: "1", memory: 512Mi }
+
+telemetry:
+  otlpGrpc: http://otel-collector.observability.svc.cluster.local:4317
+  otlpHttp: http://otel-collector.observability.svc.cluster.local:4318
+  otelJavaAgent: /otel/opentelemetry-javaagent.jar
+
+postgres:
+  image: postgres:18.6
+  exporterImage: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
+  storage: 2Gi
+  password: postgres
+  resources:
+    requests: { cpu: 500m, memory: 256Mi }
+    # One core: a small shop database. Normal load uses a few percent of it.
+    limits: { cpu: "1", memory: 1Gi }
+
+redis:
+  image: redis:8.10.2
+
+loadgen:
+  enabled: true
+  image: grafana/k6:2.3.0
+  # Requests per second per scenario.
+  browseRate: 8
+  checkoutRate: 4
+  myOrdersRate: 2

@@ -1,0 +1,114 @@
+{
+  "scenario": "psp-errors",
+  "category": "dependency_errors",
+  "status": "scored",
+  "correct": false,
+  "correct_top3": false,
+  "top_category": "dependency_down",
+  "top_service": "psp",
+  "confidence": 0.9,
+  "fix_score": 1.0,
+  "citations_verified": 0.5,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 6,
+  "llm_calls": 5,
+  "prompt_tokens": 40749,
+  "output_tokens": 1254,
+  "cache_read_tokens": 16431,
+  "cost_usd": 0.0,
+  "seconds": 145.5,
+  "agent_seconds": 36.9,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "fc3bcbf9-ede4-42ad-a647-b24eacd4b9ff",
+  "run_id": "run-28b0d8863822",
+  "details": {
+    "expected": {
+      "category": [
+        "dependency_errors"
+      ],
+      "service": [
+        "psp",
+        "payments"
+      ],
+      "fix": "Escalate to the PSP / fail over; add a circuit breaker; keep retries bounded.",
+      "fix_keywords": [
+        "psp"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "dependency_down",
+        "service": "psp",
+        "component": "psp",
+        "confidence": 0.9,
+        "verdict": "1 of 2 citations unverified"
+      }
+    ],
+    "summary": "External payment service provider (PSP) availability issues (503 Service Unavailable) caused widespread errors across payments and orders services.",
+    "triage": {
+      "severity": "critical",
+      "service": "payments",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-latency",
+        "runbook:triage-high-error-rate",
+        "runbook:payment-provider"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T08:49:32.487446Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-56 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T08:49:32.487446Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on gateway resolved: gateway: 9.277% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:49:32.487446Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 18.64% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:49:32.487446Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on payments firing: payments: 26.2% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:49:32.487446Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on orders resolved: orders: p95 latency is 1s"
+      },
+      {
+        "at": "2026-10-07T08:49:34.608Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with payments. High error rates are affecting payments and orders, causing requests to fail for users."
+      },
+      {
+        "at": "2026-10-07T08:49:34.612Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T08:50:09.392Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: dependency_down in psp (confidence 1.00)"
+      },
+      {
+        "at": "2026-10-07T08:50:10.935Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 1.00 -> 0.90)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T08:47:43.894989+00:00"
+}

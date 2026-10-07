@@ -1,0 +1,130 @@
+{
+  "scenario": "cpu-burn",
+  "category": "cpu_saturation",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "cpu_saturation",
+  "top_service": "payments",
+  "confidence": 0.8,
+  "fix_score": 0.5,
+  "citations_verified": 0.571,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 7,
+  "prompt_tokens": 102797,
+  "output_tokens": 7907,
+  "cache_read_tokens": 16855,
+  "cost_usd": 0.0,
+  "seconds": 588.3,
+  "agent_seconds": 403.4,
+  "model": "gemini-3-flash-preview+gemini-3.7-flash+gemini-3.5-flash-lite+gemini-3.5-flash",
+  "incident_id": "97ccbb62-0d30-4df7-aada-f3e1b3dc87c5",
+  "run_id": "run-a5258977ef99",
+  "details": {
+    "expected": {
+      "category": [
+        "cpu_saturation"
+      ],
+      "service": [
+        "payments"
+      ],
+      "fix": "Find the hot code path (pprof); restart payments; raise the CPU limit as a stopgap.",
+      "fix_keywords": [
+        "cpu",
+        "throttl"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "cpu_saturation",
+        "service": "payments",
+        "component": "payments service container",
+        "confidence": 0.8,
+        "verdict": "2 of 4 citations unverified"
+      },
+      {
+        "rank": 1,
+        "category": "dependency_latency",
+        "service": "psp",
+        "component": "external psp api",
+        "confidence": 0.2,
+        "verdict": "1 of 2 citations unverified"
+      },
+      {
+        "rank": 2,
+        "category": "db_pool_exhaustion",
+        "service": "inventory",
+        "component": "HikariCP pool inventory-db",
+        "confidence": 0.1,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The payments service became a bottleneck due to CPU saturation (100% throttling). This was triggered by a surge in valid traffic reaching the service after previous upstream errors in 'orders' and 'inventory' were resolved. The saturation was worsened by slow responses (~1s) from the external payment provider (PSP), which increased the concurrent request load and resource overhead beyond the service's 500m CPU limit.",
+    "triage": {
+      "severity": "warning",
+      "service": "orders",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-latency",
+        "runbook:gateway-upstream",
+        "runbook:payment-provider"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T07:40:12.815830Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-48 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T07:40:12.815830Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 1.852s"
+      },
+      {
+        "at": "2026-10-07T07:40:12.815830Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 1.658s"
+      },
+      {
+        "at": "2026-10-07T07:40:14.872Z",
+        "kind": "agent.triaged",
+        "message": "Triage: warning; start with orders. Gateway and orders services are experiencing high p95 latency affecting users."
+      },
+      {
+        "at": "2026-10-07T07:40:14.876Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T07:41:12.806216Z",
+        "kind": "alert.resolved",
+        "message": "DeploymentReplicasUnavailable on inventory resolved: inventory: 1 replica(s) unavailable for 3 minutes"
+      },
+      {
+        "at": "2026-10-07T07:41:12.806216Z",
+        "kind": "alert.resolved",
+        "message": "PodCrashLooping on inventory resolved: inventory: container restarted 2.142 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T07:46:56.253Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: cpu_saturation in payments (confidence 0.90)"
+      },
+      {
+        "at": "2026-10-07T07:47:47.850Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.90 -> 0.80)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T07:37:07.957485+00:00"
+}

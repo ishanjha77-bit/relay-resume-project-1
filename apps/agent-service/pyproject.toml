@@ -1,0 +1,32 @@
+[project]
+name = "relay-agent-service"
+version = "0.1.0"
+description = "Relay's reasoning engine: LangGraph agents that investigate incidents through MCP tools."
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic==1.11.0",
+    "mcp==2.3.0",
+    "langgraph==1.2.12",
+    "langgraph-checkpoint-redis>=0.5.2",
+    "pydantic>=2.13",
+    "pydantic-settings>=2.10",
+    "httpx2>=2.13",
+    "redis>=8.1",
+    "fastapi>=0.142",
+    "uvicorn>=0.54",
+    "prometheus-client>=0.23",
+    "google-genai>=1.40",
+    "httpx>=0.28",
+    "opentelemetry-sdk>=1.30",
+    "opentelemetry-exporter-otlp-proto-http>=1.30",
+]
+
+[project.scripts]
+relay-agent = "relay_agent.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/relay_agent"]

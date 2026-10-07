@@ -1,0 +1,11 @@
+id: cache-down
+title: Redis disappears; inventory falls back to an expensive query
+chaos: cache-down              # sandbox/chaos/cache-down.sh
+expected:
+  category: [cache_failure, dependency_down]   # top hypothesis category must be one of these
+  service: [redis, inventory]    # ...and its service one of these
+  fix: "Restore Redis (scale it back up); protect the database with request coalescing."
+  fix_keywords: ["redis"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

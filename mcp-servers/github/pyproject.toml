@@ -1,0 +1,23 @@
+[project]
+name = "relay-mcp-github"
+version = "0.1.0"
+description = "MCP server: the deploy repo's recent changes (read) and approval-gated draft PRs (write), on GitHub or Gitea."
+requires-python = ">=3.12"
+dependencies = [
+    "relay-mcp-kit",
+    "httpx2>=2.13",
+    "pyjwt[crypto]>=2.10",
+]
+
+[project.scripts]
+relay-mcp-github = "github_mcp.server:main"
+
+[tool.uv.sources]
+relay-mcp-kit = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/github_mcp"]

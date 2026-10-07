@@ -1,0 +1,25 @@
+{
+  "scenario": "slow-query",
+  "category": "slow_query",
+  "status": "no_alert",
+  "correct": null,
+  "correct_top3": null,
+  "details": {
+    "expected": {
+      "category": [
+        "slow_query"
+      ],
+      "service": [
+        "orders",
+        "postgres"
+      ],
+      "fix": "Recreate orders_customer_created_idx (CREATE INDEX CONCURRENTLY).",
+      "fix_keywords": [
+        "index"
+      ]
+    },
+    "note": "no incident within 420 s of the fault"
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T11:53:54.325008+00:00"
+}

@@ -1,0 +1,92 @@
+{
+  "scenario": "bad-deploy",
+  "category": "bad_deploy",
+  "status": "agent_failed",
+  "correct": false,
+  "correct_top3": false,
+  "top_category": null,
+  "top_service": null,
+  "confidence": null,
+  "fix_score": null,
+  "citations_verified": null,
+  "fix_proposed": false,
+  "fix_unneeded": null,
+  "injection_ok": null,
+  "steps": 15,
+  "llm_calls": 12,
+  "prompt_tokens": 183453,
+  "output_tokens": 1577,
+  "cache_read_tokens": 118314,
+  "cost_usd": 0.0,
+  "seconds": 634.0,
+  "agent_seconds": 486.4,
+  "model": "gemini-3.8-flash+gemini-3.6-flash+gemini-3.5-flash-lite",
+  "incident_id": "48914f55-3baa-4744-bf07-573a6c539ad9",
+  "run_id": "run-0250297e7c54",
+  "details": {
+    "expected": {
+      "category": [
+        "bad_deploy"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Roll orders back to 1.3.0; fix the null handling in DiscountService.apply.",
+      "fix_keywords": [
+        "rollback",
+        "1.3.0",
+        "null"
+      ],
+      "change": "orders 1.4.0: support stacked discount codes (#212)"
+    },
+    "hypotheses": [],
+    "summary": null,
+    "triage": {
+      "severity": "critical",
+      "service": "orders",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-error-rate",
+        "runbook:gateway-upstream",
+        "runbook:triage-high-latency"
+      ]
+    },
+    "proposals": [],
+    "error": "Investigation failed: ClientError: 499 CANCELLED. {'error': {'code': 499, 'message': 'The operation was cancelled.', 'status': 'CANCELLED'}}",
+    "timeline": [
+      {
+        "at": "2026-10-07T07:04:02.970638Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-45 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T07:04:02.970638Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 15.27% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:04:02.970638Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 33.54% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T07:04:07.523Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with orders. Users are experiencing failures and high error rates when making requests to the gateway and orders services."
+      },
+      {
+        "at": "2026-10-07T07:04:07.529Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T07:12:09.375Z",
+        "kind": "agent.failed",
+        "message": "Investigation failed: ClientError: 499 CANCELLED. {'error': {'code': 499, 'message': 'The operation was cancelled.', 'status': 'CANCELLED'}}"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T07:01:31.249796+00:00"
+}

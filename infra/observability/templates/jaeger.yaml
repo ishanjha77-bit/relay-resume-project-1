@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-config
+  labels: {{- include "obs.labels" "jaeger" | nindent 4 }}
+data:
+  config.yaml: |
+{{ include "obs.jaeger.config" . | indent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  labels: {{- include "obs.labels" "jaeger" | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "obs.selector" "jaeger" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "obs.labels" "jaeger" | nindent 8 }}
+      annotations:
+        checksum/config: {{ include "obs.jaeger.config" . | sha256sum }}
+    spec:
+      containers:
+        - name: jaeger
+          image: {{ .Values.images.jaeger }}
+          args: [--config=/etc/jaeger/config.yaml]
+          ports:
+            - { name: ui, containerPort: 16686 }
+            - { name: otlp-grpc, containerPort: 4317 }
+            - { name: otlp-http, containerPort: 4318 }
+            - { name: health, containerPort: 13133 }
+          readinessProbe:
+            httpGet: { path: /status, port: health }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 768Mi }
+          volumeMounts:
+            - { name: config, mountPath: /etc/jaeger }
+      volumes:
+        - name: config
+          configMap: { name: jaeger-config }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  labels: {{- include "obs.labels" "jaeger" | nindent 4 }}
+spec:
+  type: NodePort
+  selector: {{- include "obs.selector" "jaeger" | nindent 4 }}
+  ports:
+    - { name: ui, port: 16686, targetPort: ui, nodePort: {{ .Values.nodePorts.jaeger }} }
+    - { name: otlp-grpc, port: 4317, targetPort: otlp-grpc }
+    - { name: otlp-http, port: 4318, targetPort: otlp-http }

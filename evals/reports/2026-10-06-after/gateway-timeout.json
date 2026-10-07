@@ -1,0 +1,102 @@
+{
+  "scenario": "gateway-timeout",
+  "category": "config_error",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "config_error",
+  "top_service": "gateway",
+  "confidence": 0.98,
+  "fix_score": 1.0,
+  "citations_verified": 1.0,
+  "fix_proposed": true,
+  "fix_unneeded": null,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 8,
+  "prompt_tokens": 140293,
+  "output_tokens": 5360,
+  "cache_read_tokens": 63815,
+  "cost_usd": 0.0,
+  "seconds": 366.4,
+  "agent_seconds": 154.1,
+  "model": "gemini-3.6-flash+gemini-3.8-flash+gemini-3.5-flash",
+  "incident_id": "5eb11b83-c11c-43df-b976-01512fb5f0ef",
+  "run_id": "run-84aa924d1c5e",
+  "details": {
+    "expected": {
+      "category": [
+        "config_error"
+      ],
+      "service": [
+        "gateway"
+      ],
+      "fix": "Revert UPSTREAM_TIMEOUT_MS to 4000.",
+      "fix_keywords": [
+        "timeout",
+        "revert",
+        "4000"
+      ],
+      "change": "gateway: tighten upstream timeouts to protect the edge (#87)"
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "config_error",
+        "service": "gateway",
+        "component": "UPSTREAM_TIMEOUT_MS",
+        "confidence": 0.98,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "The gateway's upstream timeout configuration was aggressively tightened to 80ms, which is shorter than the typical latency of its upstream dependencies like the orders service. This causes healthy but slower requests to time out, producing a high error rate of 504 Gateway Timeout responses at the edge.",
+    "proposals": [
+      "Revert \"gateway: tighten upstream timeouts to protect the edge (#87)\""
+    ],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-06T19:45:40.857894Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-31 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-06T19:45:40.857894Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 12.86% of requests are failing"
+      },
+      {
+        "at": "2026-10-06T19:45:40.857894Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on orders resolved: orders: 10.81% of requests are failing"
+      },
+      {
+        "at": "2026-10-06T19:45:40.857894Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on gateway resolved: gateway: p95 latency is 1.004s"
+      },
+      {
+        "at": "2026-10-06T19:45:40.857894Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on orders resolved: orders: p95 latency is 2.083s"
+      },
+      {
+        "at": "2026-10-06T19:45:41.150Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-06T19:48:14.941Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: config_error in gateway (confidence 0.98)"
+      },
+      {
+        "at": "2026-10-06T19:48:15.274Z",
+        "kind": "approval.requested",
+        "message": "Relay asks to: Revert \"gateway: tighten upstream timeouts to protect the edge (#87)\" (risk low)"
+      }
+    ]
+  },
+  "batch": "2026-10-06-after",
+  "run_at": "2026-10-06T19:42:08.560331+00:00"
+}

@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: platform-api
+  threads:
+    virtual:
+      # I/O-bound service (Postgres, Redis, WebSockets): virtual threads scale
+      # request handling without a large platform-thread pool.
+      enabled: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:15432/relay}
+    username: ${DB_USER:relay}
+    password: ${DB_PASSWORD:relay}
+    hikari:
+      pool-name: platform-db
+      maximum-pool-size: 10
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:16379}
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+server:
+  port: 8080
+  shutdown: graceful
+
+logging:
+  structured:
+    format:
+      console: logstash
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+relay:
+  security:
+    issuer: relay-platform
+    token-ttl: 12h
+    # PKCS#8 PEM. Empty = an ephemeral key per process (tokens die on restart).
+    jwt-private-key: ${RELAY_JWT_PRIVATE_KEY:}
+    alertmanager-token: ${RELAY_ALERTMANAGER_TOKEN:dev-alertmanager-token}
+    webhook-secret: ${RELAY_WEBHOOK_SECRET:dev-webhook-secret}
+    demo-password: ${RELAY_DEMO_PASSWORD:relay-demo}
+    allowed-origins: ${RELAY_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3002}
+    approval-ttl: 30m
+  streams:
+    incidents: relay.incidents
+    agent-events: relay.agent-events
+    approvals: relay.approvals
+    resolved: relay.resolved
+    consumer-group: platform-api

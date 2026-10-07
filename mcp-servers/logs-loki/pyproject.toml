@@ -1,0 +1,22 @@
+[project]
+name = "relay-mcp-logs-loki"
+version = "0.1.0"
+description = "MCP server: read-only log search over Loki for Relay's agents."
+requires-python = ">=3.12"
+dependencies = [
+    "relay-mcp-kit",
+    "httpx2>=2.13",
+]
+
+[project.scripts]
+relay-mcp-logs-loki = "logs_loki.server:main"
+
+[tool.uv.sources]
+relay-mcp-kit = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/logs_loki"]

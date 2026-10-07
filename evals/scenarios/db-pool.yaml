@@ -1,0 +1,11 @@
+id: db-pool
+title: Orders leaks pooled DB connections until HikariCP is exhausted
+chaos: db-pool              # sandbox/chaos/db-pool.sh
+expected:
+  category: [db_pool_exhaustion]   # top hypothesis category must be one of these
+  service: [orders]    # ...and its service one of these
+  fix: "Find and fix the code path that borrows connections without returning them; restart orders to release them now."
+  fix_keywords: ["connection", "leak", "pool"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

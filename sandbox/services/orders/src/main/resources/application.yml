@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: orders
+  threads:
+    virtual:
+      # Platform threads on purpose: thread-pool exhaustion is one of the
+      # failure modes the sandbox needs to be able to produce.
+      enabled: false
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/orders}
+    username: ${DB_USER:orders}
+    password: ${DB_PASSWORD:orders}
+    hikari:
+      pool-name: orders-db
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 2000
+  data:
+    redis:
+      host: ${FLAGS_REDIS_HOST:localhost}
+      port: ${FLAGS_REDIS_PORT:6379}
+      timeout: 300ms
+      connect-timeout: 300ms
+
+server:
+  port: 8080
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 40
+    accept-count: 50
+    mbeanregistry:
+      enabled: true
+
+logging:
+  structured:
+    format:
+      console: logstash
+  level:
+    # Redis only backs the runtime flags here; its reconnect chatter is noise.
+    io.lettuce.core: ERROR
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: false
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        http.client.requests: true
+
+sandbox:
+  inventory:
+    url: ${INVENTORY_URL:http://localhost:8082}
+    timeout: 1s
+  payments:
+    url: ${PAYMENTS_URL:http://localhost:8083}
+    timeout: 2s
+  slow-query-threshold: 500ms

@@ -1,0 +1,41 @@
+{
+  "id": "INC-20261005-081601",
+  "number": null,
+  "title": "HighErrorRate on gateway (+3 more)",
+  "opened_at": "2026-10-05T08:11:13.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "active",
+      "since": "2026-10-05T08:11:13.201Z",
+      "summary": "gateway: 42.86% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "active",
+      "since": "2026-10-05T08:11:23.201Z",
+      "summary": "orders: 100% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "gateway",
+      "severity": "warning",
+      "state": "active",
+      "since": "2026-10-05T08:12:13.201Z",
+      "summary": "gateway: p95 latency is 3.264s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "active",
+      "since": "2026-10-05T08:12:23.201Z",
+      "summary": "orders: p95 latency is 4.188s"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+images:
+  prometheus: prom/prometheus:v3.15.0
+  alertmanager: prom/alertmanager:v0.34.1
+  loki: grafana/loki:3.7.8
+  jaeger: jaegertracing/jaeger:2.21.0
+  grafana: grafana/grafana:13.2.3
+  otelCollector: otel/opentelemetry-collector-contrib:0.161.0
+  kubeStateMetrics: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0
+
+# Host ports come from infra/kind-cluster.yaml (NodePort -> localhost).
+nodePorts:
+  grafana: 30001
+  prometheus: 30090
+  alertmanager: 30093
+  loki: 30100
+  jaeger: 30686
+
+prometheus:
+  retention: 3d
+
+alertmanager:
+  # Every sandbox alert goes to Relay's platform API. Alertmanager can't sign
+  # bodies with HMAC, so it authenticates with a bearer token (see ADR 0006).
+  webhookUrl: http://platform-api.relay.svc.cluster.local:8080/api/alerts/alertmanager
+  webhookToken: dev-alertmanager-token
+
+jaeger:
+  maxTraces: 20000
+
+logs:
+  # Pod log files to ship to Loki: /var/log/pods/<namespace>_<pod>_<uid>/<container>/*.log
+  include:
+    - /var/log/pods/sandbox_*/*/*.log
+    - /var/log/pods/relay_*/*/*.log
+  # The load generator is test traffic, not part of the system under test.
+  exclude:
+    - /var/log/pods/sandbox_loadgen-*/*/*.log

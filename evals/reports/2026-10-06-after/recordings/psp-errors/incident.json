@@ -1,0 +1,49 @@
+{
+  "id": "e555c870-01dd-4867-a245-1fc56af07e14",
+  "number": 37,
+  "title": "HighErrorRate on payments",
+  "opened_at": "2026-10-06T20:45:33.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-06T20:35:43.201Z",
+      "summary": "gateway: 6.901% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-06T20:45:33.201Z",
+      "summary": "payments: 27.95% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "gateway",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-06T20:36:43.201Z",
+      "summary": "gateway: p95 latency is 1.761s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "inventory",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-06T20:36:43.201Z",
+      "summary": "inventory: p95 latency is 1.913s"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-06T20:36:43.201Z",
+      "summary": "orders: p95 latency is 1.053s"
+    }
+  ]
+}

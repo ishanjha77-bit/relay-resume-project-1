@@ -1,0 +1,11 @@
+id: psp-latency
+title: The external payment provider answers in 2.5-3.3 s
+chaos: psp-latency              # sandbox/chaos/psp-latency.sh
+expected:
+  category: [dependency_latency]   # top hypothesis category must be one of these
+  service: [psp, payments]    # ...and its service one of these
+  fix: "Fail over to a secondary PSP or degrade gracefully; add a circuit breaker and align timeouts."
+  fix_keywords: ["psp", "timeout"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

@@ -1,0 +1,19 @@
+[
+  {
+    "batch": "2026-10-05-baseline",
+    "runs": 3,
+    "answered": 3,
+    "accuracy": 1.0,
+    "accuracy_top3": 1.0,
+    "median_seconds": 287.5,
+    "median_agent_seconds": 96.4,
+    "mean_steps": 14.3,
+    "mean_llm_calls": 10.7,
+    "mean_cost_usd": 0.0,
+    "total_cost_usd": 0.0,
+    "total_tokens": 604740,
+    "models": "gemini-3.5-flash, gemini-3.5-flash-lite",
+    "started_at": "2026-10-05T10:08:54.465323Z",
+    "finished_at": "2026-10-05T10:24:18.406415Z"
+  }
+]

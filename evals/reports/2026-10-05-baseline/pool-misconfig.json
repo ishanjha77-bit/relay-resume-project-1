@@ -1,0 +1,26 @@
+{
+  "scenario": "pool-misconfig",
+  "category": "config_error",
+  "status": "no_alert",
+  "correct": null,
+  "correct_top3": null,
+  "details": {
+    "expected": {
+      "category": [
+        "config_error"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Revert SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE to 10.",
+      "fix_keywords": [
+        "pool",
+        "revert",
+        "10"
+      ]
+    },
+    "note": "no incident within 420 s of the fault"
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T11:26:34.049155+00:00"
+}

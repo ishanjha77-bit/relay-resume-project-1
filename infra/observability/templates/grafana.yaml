@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-provisioning
+  labels: {{- include "obs.labels" "grafana" | nindent 4 }}
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        url: http://prometheus:9090
+        isDefault: true
+        jsonData:
+          timeInterval: 10s
+      - name: Loki
+        uid: loki
+        type: loki
+        url: http://loki:3100
+        jsonData:
+          # Jaeger 2.21 only serves its v3 API, which Grafana's Jaeger datasource
+          # doesn't speak yet, so trace IDs in log lines link to the Jaeger UI.
+          derivedFields:
+            - name: trace_id
+              matcherRegex: '"trace_id":"(\w+)"'
+              url: "http://localhost:16686/trace/$${__value.raw}"
+              urlDisplayLabel: Open trace in Jaeger
+      - name: Alertmanager
+        uid: alertmanager
+        type: alertmanager
+        url: http://alertmanager:9093
+        jsonData:
+          implementation: prometheus
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: relay
+        folder: Relay
+        type: file
+        disableDeletion: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  labels: {{- include "obs.labels" "grafana" | nindent 4 }}
+data:
+{{ (.Files.Glob "files/grafana/dashboards/*.json").AsConfig | indent 2 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels: {{- include "obs.labels" "grafana" | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "obs.selector" "grafana" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "obs.labels" "grafana" | nindent 8 }}
+      annotations:
+        checksum/dashboards: {{ (.Files.Glob "files/grafana/dashboards/*.json").AsConfig | sha256sum }}
+        checksum/provisioning: {{ "v2-no-jaeger-datasource" | sha256sum }}
+    spec:
+      securityContext:
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: {{ .Values.images.grafana }}
+          env:
+            # Local demo cluster: anonymous admin, no login screen.
+            - { name: GF_AUTH_ANONYMOUS_ENABLED, value: "true" }
+            - { name: GF_AUTH_ANONYMOUS_ORG_ROLE, value: Admin }
+            - { name: GF_AUTH_DISABLE_LOGIN_FORM, value: "true" }
+            - { name: GF_ANALYTICS_REPORTING_ENABLED, value: "false" }
+            - { name: GF_ANALYTICS_CHECK_FOR_UPDATES, value: "false" }
+            - { name: GF_NEWS_NEWS_FEED_ENABLED, value: "false" }
+            - { name: GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH, value: /var/lib/grafana/dashboards/sandbox-overview.json }
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet: { path: /api/health, port: http }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/grafana }
+            - { name: dashboards, mountPath: /var/lib/grafana/dashboards }
+            - { name: provisioning, mountPath: /etc/grafana/provisioning/datasources/datasources.yaml, subPath: datasources.yaml }
+            - { name: provisioning, mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml, subPath: dashboards.yaml }
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: dashboards
+          configMap: { name: grafana-dashboards }
+        - name: provisioning
+          configMap: { name: grafana-provisioning }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels: {{- include "obs.labels" "grafana" | nindent 4 }}
+spec:
+  type: NodePort
+  selector: {{- include "obs.selector" "grafana" | nindent 4 }}
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      nodePort: {{ .Values.nodePorts.grafana }}

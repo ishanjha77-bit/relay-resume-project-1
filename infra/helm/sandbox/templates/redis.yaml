@@ -1,0 +1,41 @@
+# Inventory's catalog cache. Also stores the runtime fault flags (ops:flags:*),
+# which have no TTL, so volatile-lru only ever evicts cache entries.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels: {{- include "sandbox.labels" (dict "name" "redis") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+  template:
+    metadata:
+      labels: {{- include "sandbox.labels" (dict "name" "redis") | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image }}
+          args: [--save, "", --appendonly, "no", --maxmemory, 128mb, --maxmemory-policy, volatile-lru]
+          ports:
+            - { name: redis, containerPort: 6379 }
+          readinessProbe:
+            exec:
+              command: [redis-cli, ping]
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 20m, memory: 32Mi }
+            limits: { cpu: 300m, memory: 192Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels: {{- include "sandbox.labels" (dict "name" "redis") | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: redis
+  ports:
+    - { name: redis, port: 6379, targetPort: redis }

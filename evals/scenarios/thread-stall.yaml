@@ -1,0 +1,11 @@
+id: thread-stall
+title: Orders requests serialize on a lock and exhaust Tomcat's worker threads
+chaos: thread-stall              # sandbox/chaos/thread-stall.sh
+expected:
+  category: [thread_pool_exhaustion]   # top hypothesis category must be one of these
+  service: [orders]    # ...and its service one of these
+  fix: "Remove the global lock from the request path; take a thread dump to confirm."
+  fix_keywords: ["thread", "blocked", "lock"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

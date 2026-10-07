@@ -1,0 +1,138 @@
+{
+  "scenario": "thread-stall",
+  "category": "thread_pool_exhaustion",
+  "status": "scored",
+  "correct": false,
+  "correct_top3": false,
+  "top_category": "slow_query",
+  "top_service": "inventory",
+  "confidence": 0.6,
+  "fix_score": 0.0,
+  "citations_verified": 0.0,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 13,
+  "prompt_tokens": 243383,
+  "output_tokens": 4506,
+  "cache_read_tokens": 159237,
+  "cost_usd": 0.0,
+  "seconds": 199.4,
+  "agent_seconds": 61.4,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "d20168cb-f779-4197-af6e-90a6191865fe",
+  "run_id": "run-9bf0740b496c",
+  "details": {
+    "expected": {
+      "category": [
+        "thread_pool_exhaustion"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Remove the global lock from the request path; take a thread dump to confirm.",
+      "fix_keywords": [
+        "thread",
+        "blocked",
+        "lock"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "slow_query",
+        "service": "inventory",
+        "component": "ProductRepository / inventory-db",
+        "confidence": 0.6,
+        "verdict": "3 of 3 citations unverified"
+      },
+      {
+        "rank": 1,
+        "category": "db_pool_exhaustion",
+        "service": "orders",
+        "component": "HikariCP pool orders-db",
+        "confidence": 0.5,
+        "verdict": "1 of 1 citations unverified"
+      }
+    ],
+    "summary": "Gateway and orders are experiencing high error rates and timeouts because the inventory service is running slow queries over stock_movements, exhausting database connection pools and causing cascading timeouts across the system.",
+    "triage": {
+      "severity": "critical",
+      "service": "orders",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-latency",
+        "runbook:payment-provider",
+        "runbook:triage-high-error-rate"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T09:11:22.407582Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-60 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T09:11:22.407582Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 32.81% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T09:11:22.407582Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on payments resolved: payments: 6.061% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T09:11:22.407582Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on inventory resolved: inventory: p95 latency is 1.997s"
+      },
+      {
+        "at": "2026-10-07T09:11:24.614Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with orders. Users and the gateway are experiencing a high error rate due to failures in the orders service."
+      },
+      {
+        "at": "2026-10-07T09:11:24.617Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T09:12:22.402080Z",
+        "kind": "alert.firing",
+        "message": "PodCrashLooping on orders firing: orders: container restarted 2.034 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T09:12:22.402080Z",
+        "kind": "alert.resolved",
+        "message": "HighErrorRate on inventory resolved: inventory: 8.963% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T09:12:22.402080Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 4.621s"
+      },
+      {
+        "at": "2026-10-07T09:12:22.402080Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on payments resolved: payments: p95 latency is 2.163s"
+      },
+      {
+        "at": "2026-10-07T09:12:23.805Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: slow_query in inventory (confidence 0.90)"
+      },
+      {
+        "at": "2026-10-07T09:12:37.979Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is weak (confidence 0.90 -> 0.60)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T09:09:04.356178+00:00"
+}

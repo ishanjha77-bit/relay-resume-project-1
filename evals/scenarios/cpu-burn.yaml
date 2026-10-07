@@ -1,0 +1,11 @@
+id: cpu-burn
+title: Busy goroutines saturate payments' CPU limit
+chaos: cpu-burn              # sandbox/chaos/cpu-burn.sh
+expected:
+  category: [cpu_saturation]   # top hypothesis category must be one of these
+  service: [payments]    # ...and its service one of these
+  fix: "Find the hot code path (pprof); restart payments; raise the CPU limit as a stopgap."
+  fix_keywords: ["cpu", "throttl"]
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

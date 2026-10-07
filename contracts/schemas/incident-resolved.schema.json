@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relay.dev/contracts/incident-resolved.schema.json",
+  "title": "incident resolved",
+  "description": "Published by platform-api on the Redis stream `relay.resolved` when a person resolves an incident and asks for a postmortem; consumed by agent-service, whose postmortem writer drafts one from these facts alone. `incident.id` is the idempotency key.",
+  "type": "object",
+  "required": ["event_id", "type", "at", "incident"],
+  "additionalProperties": false,
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "type": { "const": "incident.resolved" },
+    "at": { "type": "string", "format": "date-time" },
+    "incident": {
+      "type": "object",
+      "required": ["id", "key", "title", "severity", "opened_at", "resolved_at", "resolved_by", "hypotheses", "alerts", "timeline", "approvals"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "key": { "type": "string", "pattern": "^INC-[0-9]+$" },
+        "title": { "type": "string" },
+        "service": { "type": ["string", "null"] },
+        "severity": { "type": "string" },
+        "opened_at": { "type": "string", "format": "date-time" },
+        "resolved_at": { "type": "string", "format": "date-time" },
+        "resolved_by": { "type": "string" },
+        "summary": { "type": ["string", "null"] },
+        "run_id": { "type": ["string", "null"] },
+        "hypotheses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["rank", "category", "service", "summary", "confidence"],
+            "properties": {
+              "rank": { "type": "integer", "minimum": 0 },
+              "category": { "type": "string" },
+              "service": { "type": "string" },
+              "summary": { "type": "string" },
+              "confidence": { "type": "number" },
+              "suggested_fix": { "type": ["string", "null"] },
+              "verdict": { "type": ["string", "null"] },
+              "review": { "type": ["object", "null"] }
+            }
+          }
+        },
+        "alerts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "status"],
+            "properties": {
+              "name": { "type": "string" },
+              "service": { "type": ["string", "null"] },
+              "severity": { "type": ["string", "null"] },
+              "status": { "type": "string" },
+              "summary": { "type": ["string", "null"] },
+              "starts_at": { "type": ["string", "null"] },
+              "ends_at": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["at", "kind", "message"],
+            "properties": {
+              "at": { "type": "string", "format": "date-time" },
+              "kind": { "type": "string" },
+              "message": { "type": "string" }
+            }
+          }
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "status"],
+            "properties": {
+              "title": { "type": "string" },
+              "status": { "type": "string" },
+              "decided_by": { "type": ["string", "null"] },
+              "decision_reason": { "type": ["string", "null"] },
+              "result": { "type": ["object", "null"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

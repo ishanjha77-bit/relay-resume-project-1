@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-service
+  labels: {{- include "relay.labels" "agent-service" | nindent 4 }}
+spec:
+  type: NodePort
+  selector: {{- include "relay.selector" "agent-service" | nindent 4 }}
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      nodePort: {{ .Values.nodePorts.agentService }}
+---
+# Replayable recordings of every run (GET /runs/{id}/recording), kept across restarts.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: agent-recordings
+  labels: {{- include "relay.labels" "agent-service" | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.agentService.recordingsStorage }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-service
+  labels: {{- include "relay.labels" "agent-service" | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "relay.selector" "agent-service" | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "relay.labels" "agent-service" | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: /metrics
+    spec:
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: {{ add .Values.agentService.shutdownGraceS 30 }}
+      securityContext:
+        fsGroup: 10001  # the image's user owns the recordings volume
+      containers:
+        - name: agent-service
+          image: {{ .Values.images.agentService }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8000 }
+          env:
+            {{- include "relay.secretEnv" (dict "root" $ "env" "GEMINI_API_KEY" "key" "gemini-api-key" "optional" true) | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "ANTHROPIC_API_KEY" "key" "anthropic-api-key" "optional" true) | nindent 12 }}
+            - { name: RELAY_REDIS_URL, value: "redis://relay-redis:6379/0" }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_LOGS_TOKEN" "key" "mcp-logs-token") | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_METRICS_TOKEN" "key" "mcp-metrics-token") | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_K8S_TOKEN" "key" "mcp-k8s-token") | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_RUNBOOKS_TOKEN" "key" "mcp-runbooks-token") | nindent 12 }}
+            {{- include "relay.secretEnv" (dict "root" $ "env" "MCP_GITHUB_TOKEN" "key" "mcp-github-token") | nindent 12 }}
+            # Kubernetes expands $(VAR) from the variables above: URLs here, tokens from the Secret.
+            - name: RELAY_MCP_SERVERS
+              value: >-
+                [{"name": "logs", "url": "http://mcp-logs:8000/mcp", "token": "$(MCP_LOGS_TOKEN)"},
+                {"name": "metrics", "url": "http://mcp-metrics:8000/mcp", "token": "$(MCP_METRICS_TOKEN)"},
+                {"name": "k8s", "url": "http://mcp-k8s:8000/mcp", "token": "$(MCP_K8S_TOKEN)"},
+                {"name": "runbooks", "url": "http://mcp-runbooks:8000/mcp", "token": "$(MCP_RUNBOOKS_TOKEN)"},
+                {"name": "github", "url": "http://mcp-github:8000/mcp", "token": "$(MCP_GITHUB_TOKEN)"}]
+            - { name: RELAY_INVESTIGATOR__MODEL, value: {{ .Values.agentService.investigator.model | quote }} }
+            - { name: RELAY_INVESTIGATOR__FALLBACKS, value: {{ .Values.agentService.investigator.fallbacks | toJson | quote }} }
+            - { name: RELAY_INVESTIGATOR__EFFORT, value: {{ .Values.agentService.investigator.effort | quote }} }
+            # Spans only: FastAPI's automatic telemetry would also push metrics and logs, which the
+            # collector doesn't take (Prometheus scrapes /metrics).
+            - { name: OTEL_METRICS_EXPORTER, value: none }
+            - { name: OTEL_LOGS_EXPORTER, value: none }
+            - { name: RELAY_TRIAGE_ENABLED, value: {{ .Values.agentService.triage.enabled | quote }} }
+            - { name: RELAY_REVIEWER_ENABLED, value: {{ .Values.agentService.reviewer.enabled | quote }} }
+            - { name: RELAY_POSTMORTEMS_ENABLED, value: {{ .Values.agentService.postmortems.enabled | quote }} }
+            - { name: RELAY_BUDGET__TOOL_CALLS, value: {{ .Values.agentService.budget.toolCalls | quote }} }
+            - { name: RELAY_BUDGET__COST_USD, value: {{ .Values.agentService.budget.costUsd | quote }} }
+            - { name: RELAY_SANDBOX_NAMESPACE, value: {{ .Values.mcp.sandboxNamespace | quote }} }
+            - { name: RELAY_SERVICE__MAX_CONCURRENT_RUNS, value: {{ .Values.agentService.maxConcurrentRuns | quote }} }
+            - { name: RELAY_SERVICE__RUN_TIMEOUT_S, value: {{ .Values.agentService.runTimeoutS | quote }} }
+            - { name: RELAY_SERVICE__SHUTDOWN_GRACE_S, value: {{ .Values.agentService.shutdownGraceS | quote }} }
+            {{- include "relay.secretEnv" (dict "root" $ "env" "RELAY_SERVICE__API_TOKEN" "key" "agent-api-token") | nindent 12 }}
+            - { name: RELAY_SERVICE__RECORD_DIR, value: /data/recordings }
+            # Relay's own traces (a span per model and tool call) go to the cluster's OTel Collector, then Jaeger.
+            - { name: OTEL_EXPORTER_OTLP_ENDPOINT, value: {{ .Values.telemetry.otlpHttp | quote }} }
+            - { name: OTEL_SERVICE_NAME, value: relay-agent-service }
+          volumeMounts:
+            - { name: recordings, mountPath: /data }
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+          resources: {{- toYaml .Values.agentService.resources | nindent 12 }}
+      volumes:
+        - name: recordings
+          persistentVolumeClaim: { claimName: agent-recordings }

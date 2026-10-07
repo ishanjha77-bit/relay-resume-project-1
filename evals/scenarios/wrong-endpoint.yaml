@@ -1,0 +1,12 @@
+id: wrong-endpoint
+title: A config change points orders at the wrong inventory port; checkouts fail while inventory is healthy
+chaos: wrong-endpoint              # sandbox/chaos/wrong-endpoint.sh
+expected:
+  category: [config_error]   # top hypothesis category must be one of these
+  service: [orders]    # ...and its service one of these
+  fix: "Revert INVENTORY_URL on orders to http://inventory:8080 (roll back the config change)."
+  fix_keywords: ["inventory_url", "revert", "rollback", "8080"]
+  change: "orders: call inventory through its new internal port (#227)"   # the commit the fixer should propose reverting
+timeouts:
+  alerts_s: 360            # wait this long for symptom alerts to fire
+  investigation_s: 600

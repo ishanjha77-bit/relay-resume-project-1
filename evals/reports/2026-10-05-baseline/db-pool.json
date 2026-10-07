@@ -1,0 +1,81 @@
+{
+  "scenario": "db-pool",
+  "category": "db_pool_exhaustion",
+  "status": "scored",
+  "correct": false,
+  "correct_top3": false,
+  "top_category": "slow_query",
+  "top_service": "inventory",
+  "confidence": 0.95,
+  "fix_score": 0.667,
+  "citations_verified": 1.0,
+  "injection_ok": true,
+  "steps": 10,
+  "llm_calls": 5,
+  "prompt_tokens": 78126,
+  "output_tokens": 2545,
+  "cache_read_tokens": 37914,
+  "cost_usd": 0.0,
+  "seconds": 175.8,
+  "agent_seconds": 56.2,
+  "model": "gemini-3.5-flash-lite+gemini-3.8-flash",
+  "incident_id": "7891b373-8fc7-450a-a45b-5d0d942b2b3e",
+  "run_id": "run-968345a44848",
+  "details": {
+    "expected": {
+      "category": [
+        "db_pool_exhaustion"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Find and fix the code path that borrows connections without returning them; restart orders to release them now.",
+      "fix_keywords": [
+        "connection",
+        "leak",
+        "pool"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "slow_query",
+        "service": "inventory",
+        "component": "inventory-db / products query",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "An unoptimized and slow query in the inventory service caused database connections to be held for several seconds, exhausting the connection pool and triggering cascading timeouts and failures in orders, gateway, and inventory.",
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-05T10:45:49.398302Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-9 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-05T10:45:49.398302Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 32.3% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T10:45:49.398302Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 65.21% of requests are failing"
+      },
+      {
+        "at": "2026-10-05T10:45:49.785Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-05T10:46:45.573Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: slow_query in inventory (confidence 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-05-baseline",
+  "run_at": "2026-10-05T10:43:49.715013+00:00"
+}

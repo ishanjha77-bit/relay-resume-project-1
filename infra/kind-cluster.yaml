@@ -1,0 +1,19 @@
+# Single-node kind cluster for local development and CI.
+# Every UI and API is published on localhost through a NodePort mapping, so no
+# port-forwards are needed: see the table in README.md.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - { containerPort: 30000, hostPort: 3000,  protocol: TCP }  # console
+      - { containerPort: 30001, hostPort: 3001,  protocol: TCP }  # grafana
+      - { containerPort: 30081, hostPort: 8081,  protocol: TCP }  # platform-api (REST + WebSocket)
+      - { containerPort: 30088, hostPort: 8088,  protocol: TCP }  # sandbox gateway (shop API)
+      - { containerPort: 30090, hostPort: 9090,  protocol: TCP }  # prometheus
+      - { containerPort: 30093, hostPort: 9093,  protocol: TCP }  # alertmanager
+      - { containerPort: 30100, hostPort: 3100,  protocol: TCP }  # loki
+      - { containerPort: 30686, hostPort: 16686, protocol: TCP }  # jaeger UI
+      - { containerPort: 30800, hostPort: 8000,  protocol: TCP }  # agent-service
+      - { containerPort: 30432, hostPort: 15432, protocol: TCP }  # relay postgres
+      - { containerPort: 30379, hostPort: 16379, protocol: TCP }  # relay redis

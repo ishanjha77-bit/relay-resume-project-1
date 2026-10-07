@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  labels: {{- include "sandbox.labels" (dict "name" "postgres") | nindent 4 }}
+data:
+  init.sql: |
+{{ .Files.Get "files/postgres-init.sql" | indent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels: {{- include "sandbox.labels" (dict "name" "postgres") | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: postgres
+  ports:
+    - { name: postgres, port: 5432, targetPort: postgres }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels: {{- include "sandbox.labels" (dict "name" "postgres") | nindent 4 }}
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels: {{- include "sandbox.labels" (dict "name" "postgres") | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
+        prometheus.io/path: /metrics
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          # A DBA-style config: log slow statements, DDL and lock waits.
+          args:
+            - -c
+            - log_min_duration_statement=500
+            - -c
+            - log_statement=ddl
+            - -c
+            - log_lock_waits=on
+            - -c
+            - deadlock_timeout=1s
+            - -c
+            - max_connections=100
+            # No parallel workers: one analytical query fanning out to several
+            # processes gets the container CPU-throttled and stalls every OLTP query.
+            - -c
+            - max_parallel_workers_per_gather=0
+          env:
+            - { name: POSTGRES_PASSWORD, value: {{ .Values.postgres.password | quote }} }
+          ports:
+            - { name: postgres, containerPort: 5432 }
+          readinessProbe:
+            exec:
+              command: [pg_isready, -U, postgres]
+            periodSeconds: 5
+          resources: {{- toYaml .Values.postgres.resources | nindent 12 }}
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql }
+            - { name: init, mountPath: /docker-entrypoint-initdb.d }
+        - name: exporter
+          image: {{ .Values.postgres.exporterImage }}
+          env:
+            - name: DATA_SOURCE_NAME
+              value: "postgresql://exporter:exporter@localhost:5432/postgres?sslmode=disable"
+          ports:
+            - { name: metrics, containerPort: 9187 }
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+      volumes:
+        - name: init
+          configMap: { name: postgres-init }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storage }}

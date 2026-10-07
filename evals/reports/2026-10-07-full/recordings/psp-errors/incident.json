@@ -1,0 +1,41 @@
+{
+  "id": "fc3bcbf9-ede4-42ad-a647-b24eacd4b9ff",
+  "number": 56,
+  "title": "HighErrorRate on orders (+1 more)",
+  "opened_at": "2026-10-07T08:49:03.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-07T08:42:33.201Z",
+      "summary": "gateway: 9.277% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T08:49:13.201Z",
+      "summary": "orders: 18.64% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-07T08:49:03.201Z",
+      "summary": "payments: 26.2% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "orders",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-07T08:43:33.201Z",
+      "summary": "orders: p95 latency is 1s"
+    }
+  ]
+}

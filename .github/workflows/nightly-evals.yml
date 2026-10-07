@@ -1,0 +1,50 @@
+# The nightly scorecard: the whole system on a kind cluster in the runner (sandbox,
+# observability, Relay), every chaos scenario end to end, the scorecard kept as an
+# artifact. Needs a free Gemini API key in the GEMINI_API_KEY repository secret.
+name: nightly evals
+
+on:
+  schedule:
+    # 08:30 UTC: after Gemini's free-tier quotas reset at midnight Pacific.
+    - cron: "30 8 * * *"
+  workflow_dispatch:
+    inputs:
+      scenarios:
+        description: "Comma-separated scenario ids (default: all)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - uses: helm/kind-action@v1
+        with:
+          install_only: true
+      - uses: azure/setup-helm@v4
+      - name: Cluster, observability, sandbox and Relay
+        run: make up
+      - name: Is the model reachable?
+        run: make llm-check
+      - name: Every scenario, end to end
+        run: |
+          batch="nightly-$(date -u +%F)"
+          echo "BATCH=$batch" >> "$GITHUB_ENV"
+          make eval batch="$batch" label="Nightly on ${GITHUB_SHA::7}" ${{ inputs.scenarios && format('scenarios={0}', inputs.scenarios) || '' }}
+      - name: Scorecard
+        if: always()
+        run: cat "evals/reports/$BATCH/scorecard.md" >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scorecard-${{ env.BATCH }}
+          path: evals/reports/${{ env.BATCH }}/

@@ -1,0 +1,45 @@
+{{- if .Values.loadgen.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loadgen-script
+  labels: {{- include "sandbox.labels" (dict "name" "loadgen") | nindent 4 }}
+data:
+  loadgen.js: |
+{{ .Files.Get "files/loadgen.js" | indent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+  labels: {{- include "sandbox.labels" (dict "name" "loadgen") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loadgen
+  template:
+    metadata:
+      labels: {{- include "sandbox.labels" (dict "name" "loadgen") | nindent 8 }}
+      annotations:
+        checksum/script: {{ .Files.Get "files/loadgen.js" | sha256sum }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: loadgen
+          image: {{ .Values.loadgen.image }}
+          args: [run, --quiet, --summary-mode, disabled, --no-usage-report, /scripts/loadgen.js]
+          env:
+            - { name: TARGET, value: "http://gateway:8080" }
+            - { name: BROWSE_RATE, value: {{ .Values.loadgen.browseRate | quote }} }
+            - { name: CHECKOUT_RATE, value: {{ .Values.loadgen.checkoutRate | quote }} }
+            - { name: MY_ORDERS_RATE, value: {{ .Values.loadgen.myOrdersRate | quote }} }
+          resources:
+            requests: { cpu: 100m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          volumeMounts:
+            - { name: script, mountPath: /scripts }
+      volumes:
+        - name: script
+          configMap: { name: loadgen-script }
+{{- end }}

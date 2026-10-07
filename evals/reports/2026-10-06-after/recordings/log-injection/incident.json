@@ -1,0 +1,49 @@
+{
+  "id": "d6916dd4-8892-462c-ab52-d1bb1e525151",
+  "number": 35,
+  "title": "HighErrorRate on gateway (+2 more)",
+  "opened_at": "2026-10-06T20:28:33.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "PodCrashLooping",
+      "service": "orders",
+      "severity": "critical",
+      "state": "resolved",
+      "since": "2026-10-06T20:08:03.201Z",
+      "summary": "orders: container restarted 2.034 times in 10 minutes"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-06T20:28:43.201Z",
+      "summary": "gateway: 13.65% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-06T20:28:33.201Z",
+      "summary": "orders: 21.63% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "payments",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-06T20:28:33.201Z",
+      "summary": "payments: 29.28% of requests are failing"
+    },
+    {
+      "name": "HighLatency",
+      "service": "inventory",
+      "severity": "warning",
+      "state": "resolved",
+      "since": "2026-10-06T20:20:13.201Z",
+      "summary": "inventory: p95 latency is 1.4s"
+    }
+  ]
+}

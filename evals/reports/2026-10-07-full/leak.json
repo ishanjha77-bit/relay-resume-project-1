@@ -1,0 +1,120 @@
+{
+  "scenario": "leak",
+  "category": "memory_leak",
+  "status": "scored",
+  "correct": true,
+  "correct_top3": true,
+  "top_category": "memory_leak",
+  "top_service": "orders",
+  "confidence": 0.1,
+  "fix_score": 0.667,
+  "citations_verified": 0.75,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 14,
+  "prompt_tokens": 207412,
+  "output_tokens": 4041,
+  "cache_read_tokens": 119859,
+  "cost_usd": 0.0,
+  "seconds": 254.0,
+  "agent_seconds": 87.9,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "f34ad40d-6593-4842-8f68-e3bd97a58c1d",
+  "run_id": "run-51e6958c0678",
+  "details": {
+    "expected": {
+      "category": [
+        "memory_leak"
+      ],
+      "service": [
+        "orders"
+      ],
+      "fix": "Find the unbounded retention (heap dump); restart buys time; fix the leak.",
+      "fix_keywords": [
+        "heap",
+        "memory",
+        "leak"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "memory_leak",
+        "service": "orders",
+        "component": "orders container memory",
+        "confidence": 0.1,
+        "verdict": "1 of 4 citations unverified"
+      }
+    ],
+    "summary": "The gateway service experienced high error rates because upstream requests to the orders service failed. The orders service suffered from excessive memory usage and OOMKilled restarts following the deployment of version 1.4.0.",
+    "triage": {
+      "severity": "critical",
+      "service": "gateway",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-latency",
+        "runbook:triage-high-error-rate",
+        "runbook:gateway-upstream"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T08:20:42.627295Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-52 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T08:20:42.627295Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 17.68% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:20:42.627295Z",
+        "kind": "alert.resolved",
+        "message": "HighLatency on inventory resolved: inventory: p95 latency is 1.856s"
+      },
+      {
+        "at": "2026-10-07T08:20:44.772Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with gateway. Gateway is experiencing a critical high error rate affecting users and orders."
+      },
+      {
+        "at": "2026-10-07T08:20:44.775Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T08:21:42.618059Z",
+        "kind": "alert.firing",
+        "message": "PodCrashLooping on orders firing: orders: container restarted 2.008 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T08:21:42.618059Z",
+        "kind": "alert.resolved",
+        "message": "PodCrashLooping on payments resolved: payments: container restarted 2.253 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T08:21:42.618059Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 3.551s"
+      },
+      {
+        "at": "2026-10-07T08:22:10.485Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: memory_leak in orders (confidence 0.95)"
+      },
+      {
+        "at": "2026-10-07T08:22:20.155Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is unsupported (confidence 0.95 -> 0.10)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T08:17:56.467820+00:00"
+}

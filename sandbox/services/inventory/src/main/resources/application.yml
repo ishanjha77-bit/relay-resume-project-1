@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: inventory
+  threads:
+    virtual:
+      enabled: false
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/inventory}
+    username: ${DB_USER:inventory}
+    password: ${DB_PASSWORD:inventory}
+    hikari:
+      pool-name: inventory-db
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 2000
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 250ms
+      connect-timeout: 250ms
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30s
+
+server:
+  port: 8080
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 40
+    accept-count: 50
+    mbeanregistry:
+      enabled: true
+
+logging:
+  structured:
+    format:
+      console: logstash
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+inventory:
+  restock-below: 50
+  restock-amount: 1000
+  hot-skus: 20

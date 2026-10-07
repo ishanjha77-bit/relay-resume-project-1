@@ -1,0 +1,130 @@
+{
+  "scenario": "lock-contention",
+  "category": "lock_contention",
+  "status": "scored",
+  "correct": false,
+  "correct_top3": false,
+  "top_category": "db_pool_exhaustion",
+  "top_service": "inventory",
+  "confidence": 0.95,
+  "fix_score": 0.5,
+  "citations_verified": 1.0,
+  "fix_proposed": null,
+  "fix_unneeded": false,
+  "injection_ok": true,
+  "steps": 15,
+  "llm_calls": 12,
+  "prompt_tokens": 238867,
+  "output_tokens": 3466,
+  "cache_read_tokens": 161798,
+  "cost_usd": 0.0,
+  "seconds": 282.7,
+  "agent_seconds": 159.8,
+  "model": "gemini-3.5-flash-lite",
+  "incident_id": "c2cf2a0c-fdbf-4c44-9ed3-47325f41b08f",
+  "run_id": "run-2d41b0bd884c",
+  "details": {
+    "expected": {
+      "category": [
+        "lock_contention"
+      ],
+      "service": [
+        "inventory",
+        "postgres"
+      ],
+      "fix": "Disable the reconciliation job; rewrite it to lock one SKU at a time for milliseconds.",
+      "fix_keywords": [
+        "reconciliation",
+        "lock"
+      ]
+    },
+    "hypotheses": [
+      {
+        "rank": 0,
+        "category": "db_pool_exhaustion",
+        "service": "inventory",
+        "component": "HikariCP pool inventory-db",
+        "confidence": 0.95,
+        "verdict": "verified"
+      }
+    ],
+    "summary": "Users experienced high error rates and timeouts at the gateway and orders services because inventory requests failed due to inventory-db connection pool exhaustion caused by row lock contention on product stock updates in PostgreSQL.",
+    "triage": {
+      "severity": "critical",
+      "service": "orders",
+      "model": "gemini-3.5-flash-lite",
+      "errors": [],
+      "related": [
+        "runbook:triage-high-error-rate",
+        "runbook:gateway-upstream",
+        "runbook:triage-high-latency"
+      ]
+    },
+    "proposals": [],
+    "error": null,
+    "timeline": [
+      {
+        "at": "2026-10-07T08:31:12.579545Z",
+        "kind": "incident.opened",
+        "message": "Incident INC-53 opened from alertmanager"
+      },
+      {
+        "at": "2026-10-07T08:31:12.579545Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on gateway firing: gateway: 16.75% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:31:12.579545Z",
+        "kind": "alert.firing",
+        "message": "HighErrorRate on orders firing: orders: 29.57% of requests are failing"
+      },
+      {
+        "at": "2026-10-07T08:31:14.504Z",
+        "kind": "agent.triaged",
+        "message": "Triage: critical; start with orders. Users are experiencing high error rates and failures when making requests through the gateway and orders services."
+      },
+      {
+        "at": "2026-10-07T08:31:14.508Z",
+        "kind": "agent.started",
+        "message": "Investigation started: gemini-3.6-flash, effort medium, budget 15 tool calls"
+      },
+      {
+        "at": "2026-10-07T08:32:12.567919Z",
+        "kind": "alert.resolved",
+        "message": "PodCrashLooping on orders resolved: orders: container restarted 2.008 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T08:32:12.567919Z",
+        "kind": "alert.resolved",
+        "message": "PodCrashLooping on payments resolved: payments: container restarted 2.253 times in 10 minutes"
+      },
+      {
+        "at": "2026-10-07T08:32:12.567919Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on gateway firing: gateway: p95 latency is 2.185s"
+      },
+      {
+        "at": "2026-10-07T08:32:12.567919Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on inventory firing: inventory: p95 latency is 2.955s"
+      },
+      {
+        "at": "2026-10-07T08:32:12.567919Z",
+        "kind": "alert.firing",
+        "message": "HighLatency on orders firing: orders: p95 latency is 1.063s"
+      },
+      {
+        "at": "2026-10-07T08:33:52.415Z",
+        "kind": "agent.diagnosed",
+        "message": "Root cause: db_pool_exhaustion in inventory (confidence 0.95)"
+      },
+      {
+        "at": "2026-10-07T08:33:53.730Z",
+        "kind": "agent.reviewed",
+        "message": "Reviewer: the top hypothesis is supported (confidence 0.95 -> 0.95)"
+      }
+    ]
+  },
+  "batch": "2026-10-07-full",
+  "run_at": "2026-10-07T08:29:09.680373+00:00"
+}

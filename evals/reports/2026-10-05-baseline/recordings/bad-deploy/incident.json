@@ -1,0 +1,25 @@
+{
+  "id": "89b698f0-3e23-4e8d-978a-e0234fdd5fe1",
+  "number": 6,
+  "title": "HighErrorRate on gateway (+1 more)",
+  "opened_at": "2026-10-05T10:11:43.201Z",
+  "namespace": "sandbox",
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "service": "gateway",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-05T10:12:03.201Z",
+      "summary": "gateway: 16.09% of requests are failing"
+    },
+    {
+      "name": "HighErrorRate",
+      "service": "orders",
+      "severity": "critical",
+      "state": "firing",
+      "since": "2026-10-05T10:11:43.201Z",
+      "summary": "orders: 29.81% of requests are failing"
+    }
+  ]
+}
