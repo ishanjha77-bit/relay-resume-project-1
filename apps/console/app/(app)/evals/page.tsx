@@ -169,7 +169,7 @@ function BatchTrend({ batches }: { batches: EvalBatch[] }) {
     <ResponsiveContainer width="100%" height={220}>
       <LineChart data={data} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
         <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="batch" {...AXIS} />
+        <XAxis dataKey="batch" interval={0} padding={{ left: 56, right: 56 }} {...AXIS} />
         <YAxis yAxisId="acc" domain={[0, 100]} unit="%" {...AXIS} />
         <YAxis yAxisId="min" orientation="right" unit="m" {...AXIS} />
         <Tooltip {...TOOLTIP} />

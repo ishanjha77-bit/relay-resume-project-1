@@ -10,6 +10,10 @@ approves it.
 Everything runs on a laptop: a kind cluster, a four-service shop to break,
 and Gemini's free tier. **Running it costs $0.**
 
+**[Try the read-only demo](https://ishanjha77-bit.github.io/relay-resume-project-1/)**:
+19 incidents Relay really investigated, every agent step replayable in the
+browser, and the evals dashboard.
+
 ![A real recorded incident replayed in the console: triage, the trace streams in, an evidence chip opens the exact quote, the fixer asks, alice approves, a draft pull request opens, the postmortem, the evals page](docs/demo.gif)
 
 *A real incident (INC-63, a bad deploy of orders), replayed in the console from the platform's own records: triage, the investigation, the approved revert as a draft pull request, the postmortem, then the evals page.*
@@ -221,7 +225,8 @@ platform API, every agent step included. It checks the export for secrets,
 then builds the console as a static, read-only site (`apps/console/out`):
 - visitors are viewers, and nothing can be approved or resolved;
 - each recorded trace can be replayed in the browser;
-- `.github/workflows/demo-site.yml` publishes it on GitHub Pages.
+- `.github/workflows/demo-site.yml` publishes it on GitHub Pages:
+  [ishanjha77-bit.github.io/relay-resume-project-1](https://ishanjha77-bit.github.io/relay-resume-project-1/).
 
 ## Safety
 
