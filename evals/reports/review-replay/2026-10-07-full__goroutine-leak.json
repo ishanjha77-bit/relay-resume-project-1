@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "goroutine-leak",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "memory_leak in payments",
+    "confidence": 0.95,
+    "correct": true
+  },
+  "after": {
+    "top": "memory_leak in payments",
+    "confidence": 0.95,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The evidence directly confirms the payments pod was terminated due to OOMKilled after its working set memory exceeded the 128Mi container limit, placing it into CrashLoopBackOff."
+  },
+  "reranked": false
+}

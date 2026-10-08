@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "psp-rate-limit",
+  "model": "gemini-3.8-flash",
+  "before": {
+    "top": "rate_limited in psp",
+    "confidence": 0.95,
+    "correct": true
+  },
+  "after": {
+    "top": "rate_limited in psp",
+    "confidence": 0.95,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "Logs in payments clearly show external PSP calls returning HTTP 429 Too Many Requests ('psp rejected charge: 429 Too Many Requests' and 'charge failed: psp rate limit persisted after retry'), which cascades as 503 psp_rate_limited to orders and gateway."
+  },
+  "reranked": false
+}

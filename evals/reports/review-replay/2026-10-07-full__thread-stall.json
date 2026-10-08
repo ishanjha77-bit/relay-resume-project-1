@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "thread-stall",
+  "model": "gemini-3.8-flash",
+  "before": {
+    "top": "slow_query in inventory",
+    "confidence": 0.9,
+    "correct": false
+  },
+  "after": {
+    "top": "db_pool_exhaustion in orders",
+    "confidence": 0.3,
+    "correct": false,
+    "verdict": "unsupported",
+    "reason": "The cited error log quote was not found in the output. While orders is clearly failing with high error rates and latency in gateway metrics, the connection pool exhaustion claim remains unverified by the evidence provided."
+  },
+  "reranked": true
+}

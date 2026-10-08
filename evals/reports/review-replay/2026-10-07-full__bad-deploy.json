@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "bad-deploy",
+  "model": "gemini-3-flash-preview",
+  "before": {
+    "top": "bad_deploy in orders",
+    "confidence": 1.0,
+    "correct": true
+  },
+  "after": {
+    "top": "bad_deploy in orders",
+    "confidence": 0.95,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The logs show a NullPointerException in the DiscountService of the orders service immediately following a deployment of version 1.4.0. The stack trace pinpointing the error at `String.trim()` on a null `code` directly links the code change to the observed 30% failure rate in the orders service."
+  },
+  "reranked": false
+}

@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "gateway-timeout",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "config_error in gateway",
+    "confidence": 0.9,
+    "correct": true
+  },
+  "after": {
+    "top": "config_error in gateway",
+    "confidence": 0.9,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The diff clearly shows UPSTREAM_TIMEOUT_MS was reduced from 4000ms to 80ms for the gateway, and gateway error logs directly demonstrate context deadline exceeded errors at 80ms timeouts when calling downstream services."
+  },
+  "reranked": false
+}

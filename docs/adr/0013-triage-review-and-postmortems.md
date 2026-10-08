@@ -111,6 +111,13 @@ answers, so a recorded run still replays its investigator alone
   available. A check by a weaker model than the investigator's is not a
   check. Whether a Flash reviewer earns its call is measured offline:
   `evals/review_replay.py` replays it over the recorded investigations.
+  **Measured (2026-10-09):** on Flash, over the 17 recorded investigations
+  of `2026-10-07-full`, the reviewer left accuracy unchanged at 82%. It
+  improved the Brier score from 0.16, before review, to 0.14 (Flash-Lite,
+  in the batch: 0.24). It flagged one of the three misses as unsupported,
+  passed the other two, and marked one correct diagnosis weak
+  ([report](../../evals/reports/review-replay.md)). It earns its call as a
+  calibration check, not as a way to catch every wrong answer.
 - A model can now raise an incident's severity. It can never lower one, and
   the timeline records who raised it and why.
 - Postmortems are drafts written by a model from the incident's record.

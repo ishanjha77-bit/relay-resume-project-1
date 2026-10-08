@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "wrong-endpoint",
+  "model": "gemini-3.8-flash",
+  "before": {
+    "top": "config_error in orders",
+    "confidence": 0.99,
+    "correct": true
+  },
+  "after": {
+    "top": "config_error in orders",
+    "confidence": 0.95,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The git commit diff shows INVENTORY_URL was changed to port 8081 right before the incident, and logs confirm orders immediately began timing out trying to connect to inventory on reservation calls."
+  },
+  "reranked": false
+}

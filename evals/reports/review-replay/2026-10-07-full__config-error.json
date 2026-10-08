@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "config-error",
+  "model": "gemini-3.5-flash",
+  "before": {
+    "top": "config_error in inventory",
+    "confidence": 0.9,
+    "correct": true
+  },
+  "after": {
+    "top": "config_error in inventory",
+    "confidence": 0.9,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The deployment diff shows DB_URL was changed to point to postgres-primary, which has no active service, causing the new inventory pods to crash on startup."
+  },
+  "reranked": false
+}

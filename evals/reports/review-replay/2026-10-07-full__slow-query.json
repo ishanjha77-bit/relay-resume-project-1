@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "slow-query",
+  "model": "gemini-3.8-flash",
+  "before": {
+    "top": "slow_query in postgres",
+    "confidence": 0.95,
+    "correct": true
+  },
+  "after": {
+    "top": "slow_query in postgres",
+    "confidence": 0.8,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The postgres logs confirm queries taking over 5 seconds and orders logs confirm HikariCP pool exhaustion, though Citation E1 failed to match the raw output format. Postgres slow queries explain the cascading pool exhaustion and downstream errors across services."
+  },
+  "reranked": false
+}

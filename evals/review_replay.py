@@ -182,4 +182,6 @@ async def main() -> int:
 
 
 if __name__ == "__main__":
+    # The report's ✓/✗ don't exist in Windows' default console code page.
+    sys.stdout.reconfigure(encoding="utf-8")
     sys.exit(asyncio.run(main()))

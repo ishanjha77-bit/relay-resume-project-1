@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "cpu-burn",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "cpu_saturation in payments",
+    "confidence": 0.9,
+    "correct": true
+  },
+  "after": {
+    "top": "cpu_saturation in payments",
+    "confidence": 0.85,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "E1 explicitly shows the payments service container hitting its CPU limit (0.4998 cores used) and experiencing 100% CPU throttling, causing downstream latency in orders and gateway. Although citations E7 and E9 quotes were not found in the excerpt text, E1 directly confirms CPU saturation as the direct cause."
+  },
+  "reranked": false
+}

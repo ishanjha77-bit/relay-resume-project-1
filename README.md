@@ -59,16 +59,22 @@ What each stage did:
 - **Accuracy.** It rose from 71% to 76% to 82%. With 17 incidents, one verdict
   is 6 points: the trend holds across three batches, but any single step is
   within run-to-run noise.
-- **The reviewer, as measured, did not help.** The free tier's Flash quota ran
-  out mid-batch, so 12 of its 17 reviews ran on Flash-Lite, a weaker model
-  than the investigator's. Those cut two correct diagnoses to 10% and 0%
-  confidence. One cut came from errors left over from the previous scenario,
-  which looked like an earlier onset; it stopped the fixer from proposing a
-  correct revert. They also passed two wrong diagnoses, and the Brier score
-  rose from 0.20 to 0.24. The reviewer now runs on the Flash models only, and
-  is skipped when none is left. Whether a Flash reviewer helps is the next
-  measurement: `evals/review_replay.py` replays it over the recorded
-  investigations.
+- **The reviewer improves calibration on Flash, not accuracy.** In the batch,
+  the free tier's Flash quota ran out mid-batch, so 12 of its 17 reviews ran
+  on Flash-Lite, a weaker model than the investigator's. Those cut two
+  correct diagnoses to 10% and 0% confidence. One cut came from errors left
+  over from the previous scenario, which looked like an earlier onset; it
+  stopped the fixer from proposing a correct revert. They also passed two
+  wrong diagnoses. On the same 17 investigations, the Brier score went from
+  0.16 before review to 0.24 after it. The reviewer now runs on the Flash
+  models only, and is skipped when none is left.
+  [Replayed on Flash](evals/reports/review-replay.md) over the same recorded
+  investigations, it left accuracy at 82%. It lowered the mean stated
+  confidence from 95% to 83%, and the Brier score improved from 0.16 to 0.14.
+  It flagged the thread-stall miss as unsupported (90% → 30%), but passed the
+  other two misses at 90% or more. It also marked one correct diagnosis weak
+  (leak, 95% → 40%). This is one replay of 17 investigations: a small effect,
+  in the right direction.
 - **Citations fell to 77%** for the same reason: Flash-Lite answered most of the
   second half, and it quotes less exactly.
 

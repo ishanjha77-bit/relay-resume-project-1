@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "psp-latency",
+  "model": "gemini-3.8-flash",
+  "before": {
+    "top": "dependency_latency in psp",
+    "confidence": 0.99,
+    "correct": true
+  },
+  "after": {
+    "top": "dependency_latency in psp",
+    "confidence": 0.8,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "Logs confirm outbound calls from the payments service to the external PSP endpoint (https://api.psp.example/v1/charges) are timing out after ~2000ms, triggering cascading timeouts upstream in orders and gateway. However, citation E1 is not found, so exact metric latency trends for PSP are missing from the cited evidence."
+  },
+  "reranked": false
+}

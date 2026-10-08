@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "lock-contention",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "db_pool_exhaustion in inventory",
+    "confidence": 0.95,
+    "correct": false
+  },
+  "after": {
+    "top": "db_pool_exhaustion in inventory",
+    "confidence": 0.92,
+    "correct": false,
+    "verdict": "supported",
+    "reason": "The evidence directly shows HikariCP pool exhaustion on `inventory-db` caused by row lock contention in Postgres during stock updates on the `products` table, which directly causes downstream errors in orders and gateway."
+  },
+  "reranked": false
+}

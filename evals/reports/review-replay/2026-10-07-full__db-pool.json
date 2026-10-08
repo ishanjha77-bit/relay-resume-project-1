@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "db-pool",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "db_pool_exhaustion in orders",
+    "confidence": 0.9,
+    "correct": true
+  },
+  "after": {
+    "top": "db_pool_exhaustion in orders",
+    "confidence": 0.7,
+    "correct": true,
+    "verdict": "weak",
+    "reason": "Evidence (E7, E9) demonstrates that the orders HikariCP pool reached max capacity (10 active connections), causing connection timeouts and high error rates. However, citation E14 was not found, leaving the exact mechanism of the leak/saturation versus DB lock/latency unproven."
+  },
+  "reranked": false
+}

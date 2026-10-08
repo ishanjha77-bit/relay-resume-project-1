@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "psp-errors",
+  "model": "gemini-3.5-flash",
+  "before": {
+    "top": "dependency_down in psp",
+    "confidence": 1.0,
+    "correct": false
+  },
+  "after": {
+    "top": "dependency_down in psp",
+    "confidence": 0.9,
+    "correct": false,
+    "verdict": "supported",
+    "reason": "The logs clearly show that the payment service is failing with a 503 Service Unavailable error and connection issues when calling the external PSP, which in turn causes orders to fail."
+  },
+  "reranked": false
+}

@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "leak",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "memory_leak in orders",
+    "confidence": 0.95,
+    "correct": true
+  },
+  "after": {
+    "top": "memory_leak in orders",
+    "confidence": 0.4,
+    "correct": true,
+    "verdict": "weak",
+    "reason": "The orders service is crashing due to OOMKilled errors causing gateway timeouts, but release 1.4.0 was rolled back to 1.3.0 at 07:12Z\u2014an hour before the 08:20Z incident. Evidence shows version 1.3.0 currently failing, so blaming 1.4.0 for the current failure is unsupported, and citation E4 had a quote match failure."
+  },
+  "reranked": false
+}

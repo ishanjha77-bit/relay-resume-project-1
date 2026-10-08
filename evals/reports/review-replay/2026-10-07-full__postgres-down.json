@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "postgres-down",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "dependency_down in postgres",
+    "confidence": 0.95,
+    "correct": true
+  },
+  "after": {
+    "top": "dependency_down in postgres",
+    "confidence": 0.95,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "Logs from both inventory and orders services explicitly show PSQLException with connection refused to postgres:5432, resulting in pool exhaustion and upstream errors."
+  },
+  "reranked": false
+}

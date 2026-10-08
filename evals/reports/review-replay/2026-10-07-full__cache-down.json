@@ -1,0 +1,18 @@
+{
+  "batch": "2026-10-07-full",
+  "scenario": "cache-down",
+  "model": "gemini-3.6-flash",
+  "before": {
+    "top": "cache_failure in redis",
+    "confidence": 0.95,
+    "correct": true
+  },
+  "after": {
+    "top": "cache_failure in redis",
+    "confidence": 0.95,
+    "correct": true,
+    "verdict": "supported",
+    "reason": "The evidence directly demonstrates that the Redis deployment was scaled to 0 replicas, causing inventory's cache queries to fail and fall back to PostgreSQL. This saturated inventory's database connection pool and thread pool, leading to cascading timeouts in orders and gateway."
+  },
+  "reranked": false
+}
