@@ -223,7 +223,7 @@ test: test-python test-node test-go test-java ## Run all unit tests
 .PHONY: test-node
 test-node: ## TypeScript: the k8s MCP server's tests; the console's lint and type check
 	cd mcp-servers/k8s-readonly && npm ci --no-audit --no-fund --silent && npm run lint && npm test
-	cd apps/console && npm ci --no-audit --no-fund --silent && npm run lint && npx tsc --noEmit
+	cd apps/console && npm ci --no-audit --no-fund --silent && npm run lint && npx next typegen && npx tsc --noEmit
 
 .PHONY: test-e2e
 test-e2e: ## Console end-to-end tests (Playwright, recorded API responses; no backend needed)

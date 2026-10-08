@@ -6,7 +6,7 @@ name: demo site
 on:
   push:
     branches: [main]
-    paths: ["apps/console/**"]
+    paths: ["apps/console/**", ".github/workflows/demo-site.yml"]
   workflow_dispatch:
 
 permissions:

@@ -74,7 +74,7 @@ jobs:
         run: npm ci && npm run lint && npm test
       - name: Console · lint and types
         working-directory: apps/console
-        run: npm ci && npm run lint && npx tsc --noEmit
+        run: npm ci && npm run lint && npx next typegen && npx tsc --noEmit
       - name: Console · end to end (Chromium, axe)
         working-directory: apps/console
         run: npx playwright install --with-deps chromium && npx playwright test
